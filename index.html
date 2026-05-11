@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BRAIDS Interactive Tool</title>
+    
+    <!-- Browser Tab Title -->
+    <title>The BRAIDS Project</title>
+
+    <!-- Social Media Link Preview Meta Tags -->
+    <meta property="og:title" content="The BRAIDS Project">
+    <meta property="og:description" content="Beliefs Regarding Academic Integrity in Dentistry.">
+    <!-- REPLACE THE URL BELOW WITH YOUR ACTUAL GITHUB URL -->
+    <meta property="og:image" content="https://balrajshukla.github.io/BRAIDS/preview.png">
+    <meta property="og:url" content="https://balrajshukla.github.io/BRAIDS/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter/X Specific Link Preview Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The BRAIDS Project">
+    <meta name="twitter:description" content="Beliefs Regarding Academic Integrity in Dentistry.">
+    <!-- REPLACE THE URL BELOW WITH YOUR ACTUAL GITHUB URL -->
+    <meta name="twitter:image" content="https://balrajshukla.github.io/BRAIDS/preview.png">
     
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
@@ -74,16 +91,13 @@
 
         label.main-label { display: block; margin-bottom: 8px; font-size: 0.85em; font-weight: bold; color: var(--text-muted); letter-spacing: 1px; }
 
-        /* SPLIT LAYOUT: Left (Form) / Right (Map) */
-        .split-layout {
-            display: flex; gap: 20px; width: 100%;
-        }
+        /* SPLIT LAYOUT */
+        .split-layout { display: flex; gap: 20px; width: 100%; }
         .left-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
         .right-col { flex: 1; display: flex; flex-direction: column; }
-
         .form-box { background: rgba(42, 42, 42, 0.6); padding: 15px; border-radius: 8px; position: relative; }
 
-        /* Playful Age Slider */
+        /* Age Slider */
         .slider-container { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
         .age-display-bubble { font-size: 1.5em; font-weight: bold; color: var(--accent); margin-bottom: 5px; transition: color 0.5s ease; }
         input[type="range"] { -webkit-appearance: none; width: 100%; background: transparent; height: 25px; outline: none; margin: 0; }
@@ -93,41 +107,29 @@
             background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); transition: background 0.5s ease;
         }
 
-        /* 3-Way Gender Toggle */
+        /* Gender Toggle */
         .gender-toggle-wrapper { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 5px; box-sizing: border-box; }
         .gender-label { font-size: 0.8em; font-weight: bold; color: #555; transition: 0.3s ease; flex: 1; text-align: center; }
         .gender-label.active-male { color: var(--male-color); }
         .gender-label.active-neutral { color: #4facfe; }
         .gender-label.active-female { color: var(--female-color); }
-        
         .tri-state-slider { -webkit-appearance: none; width: 100px; height: 8px; background: #333; border-radius: 4px; outline: none; margin: 0 10px; }
         .tri-state-slider::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%;
             background: var(--accent); cursor: pointer; transition: background 0.5s ease; border: 2px solid #fff;
         }
 
-        /* Map Window - The Fix */
+        /* Map Window */
         .map-viewport {
-            position: relative;
-            flex-grow: 1;
-            width: 100%;
-            min-height: 250px;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #151515;
-            border: 1px solid #333;
+            position: relative; flex-grow: 1; width: 100%; min-height: 250px;
+            border-radius: 6px; overflow: hidden; background: #151515; border: 1px solid #333;
         }
-        
         .map-scroller {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            overflow: auto; cursor: grab;
-            scrollbar-width: none; -ms-overflow-style: none; /* Hide scrollbars */
-            -webkit-overflow-scrolling: touch;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: auto; cursor: grab;
+            scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;
         }
         .map-scroller::-webkit-scrollbar { display: none; }
         .map-scroller:active { cursor: grabbing; }
-        
         #india-map { width: 100%; height: 100%; transform-origin: 0 0; }
 
         .zoom-controls { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 5px; z-index: 10; }
@@ -186,7 +188,6 @@
         .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; }
         .success-icon { font-size: 3em; color: var(--success); margin-bottom: 10px; }
 
-        /* Mobile Optimization */
         @media (max-width: 600px) {
             body { padding: 5px; }
             .container { padding: 10px; margin-top: 10px; border-radius: 8px; }
@@ -226,9 +227,8 @@
     <div id="home-section" class="section active">
         
         <div class="split-layout">
-            <!-- LEFT PANEL: Form Elements -->
+            <!-- LEFT PANEL -->
             <div class="left-col">
-                <!-- Playful Age -->
                 <div class="form-box">
                     <label class="main-label">AGE</label>
                     <div class="slider-container" id="age-container">
@@ -237,7 +237,6 @@
                     </div>
                 </div>
 
-                <!-- Tri-State Gender -->
                 <div class="form-box">
                     <label class="main-label">GENDER</label>
                     <div class="gender-toggle-wrapper">
@@ -247,7 +246,6 @@
                     </div>
                 </div>
 
-                <!-- Role Selection -->
                 <div class="form-box" style="flex-grow: 1;">
                     <label class="main-label">ROLE</label>
                     <div class="role-grid" id="role-grid">
@@ -262,7 +260,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT PANEL: Interactive Map -->
+            <!-- RIGHT PANEL -->
             <div class="right-col">
                 <div class="form-box" style="flex-grow: 1; display: flex; flex-direction: column;">
                     <label class="main-label" style="text-align: center; margin-bottom: 2px;">TAP ON THE STATE WHERE YOUR INSTITUTE IS LOCATED</label>
@@ -317,15 +315,14 @@
 
 <script>
     // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLnWlqWIpbBqEknPQwUz-MM7Rv4c9rIIwuPdF9O1nxPKpS6Ed7eQkbU4ETklqaAiM/exec';
+    const GOOGLE_APP_SCRIPT_URL = 'YOUR_GOOGLE_WEB_APP_URL_HERE';
 
     // ----------------------------------------------------
-    // PLAYFUL INPUT LOGIC (Tri-State Theme & Emojis)
+    // PLAYFUL INPUT LOGIC
     // ----------------------------------------------------
     let currentUserAge = "25";
-    let currentUserGender = "Prefer not to say"; // Default center
+    let currentUserGender = "Prefer not to say"; 
 
-    // Set initial center color
     document.getElementById('label-male').style.color = "#555";
     document.getElementById('label-female').style.color = "#555";
 
@@ -358,7 +355,7 @@
             labelMale.style.color = 'var(--male-color)'; labelFemale.style.color = '#555';
         } else if (val == 1) {
             currentUserGender = "Prefer not to say";
-            document.documentElement.style.setProperty('--accent', '#4facfe'); // Neutral Blue
+            document.documentElement.style.setProperty('--accent', '#4facfe'); 
             labelMale.style.color = '#555'; labelFemale.style.color = '#555';
         } else {
             currentUserGender = "Female";
@@ -395,7 +392,7 @@
     });
 
     // ----------------------------------------------------
-    // GOOGLE GEOCHART MAP LOGIC (Zoom & Pan)
+    // GOOGLE GEOCHART MAP LOGIC
     // ----------------------------------------------------
     let currentMapWidth = 100;
     function zoomMap(delta) {
