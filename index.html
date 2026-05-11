@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BRAIDS Interactive Tool</title>
     
-    <!-- JSVectorMap CSS (For the Interactive India Map) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap/dist/css/jsvectormap.min.css" />
+    <!-- Google Charts (For the Interactive India Map) -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <style>
         :root {
@@ -112,13 +112,13 @@
             border-radius: 8px;
             padding: 10px;
             text-align: center;
-            font-size: 0.85em; /* Made text slightly smaller */
+            font-size: 0.85em; 
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 50px; /* Made tiles shorter */
+            min-height: 50px; 
             user-select: none;
         }
 
@@ -153,15 +153,22 @@
         /* Interactive Map Container */
         #india-map {
             width: 100%;
-            height: 350px;
+            height: 400px;
             background-color: transparent;
+            border-radius: 8px;
+            overflow: hidden;
         }
-        .jvm-tooltip {
-            background-color: #000;
-            color: #fff;
+        
+        /* Map Tooltip Fix for Dark Mode */
+        .google-visualization-tooltip {
+            background-color: #1e1e1e !important;
+            border: 1px solid #4facfe !important;
+            color: #fff !important;
+            font-family: inherit !important;
             border-radius: 4px;
-            padding: 5px 10px;
-            font-family: inherit;
+        }
+        .google-visualization-tooltip-item span {
+            color: #fff !important;
         }
 
         /* Vertical Progress Bar */
@@ -174,7 +181,7 @@
             height: 60vh;
             background-color: #2a2a2a;
             border-radius: 10px;
-            display: none; /* Hidden by default */
+            display: none; 
             flex-direction: column;
             justify-content: flex-end;
             z-index: 100;
@@ -316,12 +323,13 @@
             .btn-submit, .start-btn { max-width: 100%; }
             .v-progress-container { right: 5px; width: 6px; height: 50vh; }
             .v-progress-text { font-size: 0.7em; }
+            #india-map { height: 300px; }
         }
     </style>
 </head>
 <body>
 
-<!-- Vertical Progress Bar (Outside container to stay fixed on screen) -->
+<!-- Vertical Progress Bar -->
 <div id="v-progress-container" class="v-progress-container">
     <div class="v-progress-text" id="v-progress-text">0%</div>
     <div class="v-progress-bar" id="v-progress-bar"></div>
@@ -338,21 +346,18 @@
     <!-- HOME PAGE -->
     <div id="home-section" class="section active">
         
-        <!-- Age Input -->
         <div class="form-group">
             <label class="main-label" for="user-age">1. Please state your age:</label>
             <input type="number" id="user-age" placeholder="e.g. 24" min="17" max="100">
         </div>
 
-        <!-- Interactive Map -->
         <div class="form-group">
             <label class="main-label">2. Select the state where your institute is located:</label>
-            <p style="font-size: 0.85em; color: var(--text-muted); margin-top: -10px;">Tap/Click on the political map to select.</p>
+            <p style="font-size: 0.85em; color: var(--text-muted); margin-top: -10px;">Tap/Click on the political map below.</p>
             <div id="india-map"></div>
             <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin-top: 10px;">No state selected</p>
         </div>
 
-        <!-- Role Selection -->
         <div class="form-group">
             <label class="main-label">3. Select your current role:</label>
             <div class="role-grid" id="role-grid">
@@ -398,41 +403,110 @@
     </div>
 </div>
 
-<!-- Scripts for the Map -->
-<script src="https://cdn.jsdelivr.net/npm/jsvectormap"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/india.js"></script>
-
 <script>
     // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
     const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnbD-DkqRDKWU8-LPd0pm5ykDx7gdyseuCKebQVKDmwlBpvxgmktedgRDPaDIP1o7W/exec';
 
-    // Map Initialization Variables
+    // ----------------------------------------------------
+    // GOOGLE GEOCHART MAP LOGIC
+    // ----------------------------------------------------
     let selectedStateName = "";
+    let geoChart;
+    let geoData;
+    let geoOptions;
+
+    google.charts.load('current', {
+      'packages':['geochart'],
+    });
+    google.charts.setOnLoadCallback(drawRegionsMap);
+
+    function drawRegionsMap() {
+      geoData = new google.visualization.DataTable();
+      geoData.addColumn('string', 'StateCode');
+      geoData.addColumn('number', 'Selected');
+      geoData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
+
+      // All states of India with their ISO codes
+      const states = [
+        ['IN-AP', 'Andhra Pradesh'], ['IN-AR', 'Arunachal Pradesh'], ['IN-AS', 'Assam'],
+        ['IN-BR', 'Bihar'], ['IN-CT', 'Chhattisgarh'], ['IN-GA', 'Goa'], ['IN-GJ', 'Gujarat'],
+        ['IN-HR', 'Haryana'], ['IN-HP', 'Himachal Pradesh'], ['IN-JH', 'Jharkhand'],
+        ['IN-KA', 'Karnataka'], ['IN-KL', 'Kerala'], ['IN-MP', 'Madhya Pradesh'],
+        ['IN-MH', 'Maharashtra'], ['IN-MN', 'Manipur'], ['IN-ML', 'Meghalaya'],
+        ['IN-MZ', 'Mizoram'], ['IN-NL', 'Nagaland'], ['IN-OR', 'Odisha'], ['IN-PB', 'Punjab'],
+        ['IN-RJ', 'Rajasthan'], ['IN-SK', 'Sikkim'], ['IN-TN', 'Tamil Nadu'],
+        ['IN-TG', 'Telangana'], ['IN-TR', 'Tripura'], ['IN-UP', 'Uttar Pradesh'],
+        ['IN-UT', 'Uttarakhand'], ['IN-WB', 'West Bengal'], ['IN-AN', 'Andaman and Nicobar Islands'],
+        ['IN-CH', 'Chandigarh'], ['IN-DN', 'Dadra and Nagar Haveli and Daman and Diu'],
+        ['IN-DL', 'Delhi'], ['IN-JK', 'Jammu and Kashmir'], ['IN-LA', 'Ladakh'],
+        ['IN-LD', 'Lakshadweep'], ['IN-PY', 'Puducherry']
+      ];
+
+      states.forEach(state => {
+         geoData.addRow([state[0], 0, state[1]]);
+      });
+
+      geoOptions = {
+        region: 'IN', // Display India
+        domain: 'IN',
+        displayMode: 'regions',
+        resolution: 'provinces',
+        backgroundColor: 'transparent',
+        datalessRegionColor: '#1e1e1e', // Dark color for background
+        defaultColor: '#333333', // Default unselected color
+        colorAxis: {
+            colors: ['#333333', '#4facfe'], // 0 = unselected, 1 = selected (blue)
+            minValue: 0,
+            maxValue: 1
+        },
+        legend: 'none', // Hide the color scale bar
+        keepAspectRatio: true,
+        tooltip: {textStyle: {color: '#ffffff'}, showColorCode: false}
+      };
+
+      geoChart = new google.visualization.GeoChart(document.getElementById('india-map'));
+
+      // Event Listener for Clicks
+      google.visualization.events.addListener(geoChart, 'regionClick', function(eventData) {
+        let rowIndex = -1;
+        for (let i = 0; i < geoData.getNumberOfRows(); i++) {
+          if (geoData.getValue(i, 0) === eventData.region) {
+            rowIndex = i;
+            break;
+          }
+        }
+
+        if (rowIndex !== -1) {
+          // Reset all rows to 0 (unselected)
+          for (let i = 0; i < geoData.getNumberOfRows(); i++) {
+            geoData.setValue(i, 1, 0);
+          }
+          // Set the clicked state to 1 (selected)
+          geoData.setValue(rowIndex, 1, 1);
+          selectedStateName = geoData.getValue(rowIndex, 2);
+          
+          document.getElementById('selected-state-display').innerText = "Selected: " + selectedStateName;
+          
+          // Redraw map to show color update
+          geoChart.draw(geoData, geoOptions);
+        }
+      });
+
+      // Initial draw
+      geoChart.draw(geoData, geoOptions);
+    }
     
-    document.addEventListener("DOMContentLoaded", function() {
-        const map = new jsVectorMap({
-            selector: '#india-map',
-            map: 'in_mill',
-            regionsSelectable: true,
-            regionsSelectableOne: true,
-            zoomOnScroll: false,
-            regionStyle: {
-                initial: { fill: '#333', stroke: '#555', strokeWidth: 0.5 },
-                selected: { fill: '#4facfe' },
-                hover: { fill: '#00f2fe' }
-            },
-            onRegionSelected: function(index, isSelected, selectedRegions) {
-                if (isSelected) {
-                    selectedStateName = map.getRegionName(index);
-                    document.getElementById('selected-state-display').innerText = "Selected: " + selectedStateName;
-                } else {
-                    selectedStateName = "";
-                    document.getElementById('selected-state-display').innerText = "No state selected";
-                }
-            }
-        });
+    // Redraw map if window resizes to keep it responsive
+    window.addEventListener('resize', () => {
+        if(geoChart && geoData && geoOptions) {
+            geoChart.draw(geoData, geoOptions);
+        }
     });
 
+
+    // ----------------------------------------------------
+    // SURVEY LOGIC
+    // ----------------------------------------------------
     const facultyQuestions = [
         "Peers and senior faculty members influence my actions against academic misconduct.",
         "I wish to report academic dishonesty, but I am bound by institutional culture.",
@@ -487,7 +561,6 @@
     const totalPages = totalQuestions / questionsPerPage; 
     let userResponses = {};
 
-    // Role Selection Logic
     document.querySelectorAll('.role-box').forEach(box => {
         box.addEventListener('click', function() {
             document.querySelectorAll('.role-box').forEach(b => b.classList.remove('selected'));
@@ -505,10 +578,10 @@
         
         if (sectionId === 'questions-section') {
             warning.style.display = 'block';
-            vProgressBar.style.display = 'flex'; // Show vertical bar
+            vProgressBar.style.display = 'flex'; 
         } else {
             warning.style.display = 'none';
-            vProgressBar.style.display = 'none'; // Hide vertical bar
+            vProgressBar.style.display = 'none'; 
         }
     }
 
@@ -582,21 +655,18 @@
         document.getElementById(`card-${qId}`).classList.add('answered');
         updateProgress();
 
-        // The Floating Smiley Logic
         const smiley = document.createElement('div');
         smiley.className = 'floating-smiley';
         smiley.innerText = '😊';
         
-        // Find the label element that was actually clicked (next to the hidden radio input)
         const label = event.target.nextElementSibling;
         const rect = label.getBoundingClientRect();
         
-        smiley.style.left = (rect.left + window.scrollX + rect.width / 2 - 12) + 'px'; // Center horizontally
-        smiley.style.top = (rect.top + window.scrollY - 10) + 'px'; // Start slightly above button
+        smiley.style.left = (rect.left + window.scrollX + rect.width / 2 - 12) + 'px'; 
+        smiley.style.top = (rect.top + window.scrollY - 10) + 'px'; 
         
         document.body.appendChild(smiley);
         
-        // Clean up the smiley from the DOM after animation finishes
         setTimeout(() => {
             smiley.remove();
         }, 1000);
