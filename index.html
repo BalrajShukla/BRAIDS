@@ -13,55 +13,54 @@
             --card-bg: #1e1e1e;
             --text-main: #e0e0e0;
             --text-muted: #a0a0a0;
-            --accent: #4facfe;
-            --accent-hover: #00f2fe;
+            --accent: #4facfe; /* Default Neutral Blue */
+            --male-color: #ff9800; /* Orange */
+            --female-color: #ff61a6; /* Pink */
             --danger: #ff4b4b;
             --success: #00e676;
             --warning: #ffea00;
-            --male-color: #4facfe;
-            --female-color: #ff61a6;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            /* Initial glowing gradient in the top right corner */
-            background-image: radial-gradient(circle at top right, rgba(79, 172, 254, 0.15), #121212 60%);
             color: var(--text-main);
             margin: 0;
             padding: 10px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            transition: background-image 1s ease; /* Smooth transition when colors change */
+            transition: background 1s ease, --accent 0.5s ease;
+            background-image: radial-gradient(circle at center, rgba(79, 172, 254, 0.05), #121212 100%);
         }
 
-        /* Top Sticky Progress Bar */
+        /* Vibrant Background Classes for Questions Pages */
+        body.theme-0 { background-image: radial-gradient(circle at top left, rgba(79, 172, 254, 0.25), #121212 70%); }
+        body.theme-1 { background-image: radial-gradient(circle at top right, rgba(142, 45, 226, 0.25), #121212 70%); }
+        body.theme-2 { background-image: radial-gradient(circle at bottom left, rgba(0, 242, 254, 0.25), #121212 70%); }
+        body.theme-3 { background-image: radial-gradient(circle at bottom right, rgba(255, 97, 166, 0.25), #121212 70%); }
+
         .top-progress-container {
             position: fixed; top: 0; left: 0; right: 0; height: 6px;
             background-color: #2a2a2a; z-index: 2000; display: none;
             box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
-
         .top-progress-bar {
-            height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
-            width: 0%; transition: width 0.4s ease;
+            height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease, background 0.5s ease;
         }
-
         .top-progress-text {
-            position: absolute; top: 10px; right: 10px; font-size: 0.8em;
-            font-weight: bold; color: var(--accent); background: rgba(0,0,0,0.6);
-            padding: 4px 8px; border-radius: 4px;
+            position: absolute; top: 10px; right: 10px; font-size: 0.8em; font-weight: bold;
+            color: var(--accent); background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 4px;
         }
 
         .container {
-            max-width: 800px; width: 100%; background: var(--card-bg);
+            max-width: 900px; width: 100%; background: var(--card-bg);
             border-radius: 12px; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.6);
             display: flex; flex-direction: column; box-sizing: border-box;
             position: relative; margin-top: 15px; border: 1px solid rgba(255,255,255,0.05);
         }
 
-        h1 { text-align: center; color: var(--accent); margin: 0 0 5px 0; font-size: 1.8em; letter-spacing: 1px; }
+        h1 { text-align: center; color: var(--accent); margin: 0 0 5px 0; font-size: 1.8em; letter-spacing: 1px; transition: color 0.5s ease; }
         h3 { text-align: center; font-weight: 400; color: var(--text-muted); margin: 0 0 20px 0; font-size: 0.95em; }
 
         .header-warning {
@@ -73,91 +72,77 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .form-group {
-            margin-bottom: 15px; background: rgba(42, 42, 42, 0.6);
-            padding: 15px; border-radius: 8px;
+        label.main-label { display: block; margin-bottom: 8px; font-size: 0.85em; font-weight: bold; color: var(--text-muted); letter-spacing: 1px; }
+
+        /* SPLIT LAYOUT: Left (Form) / Right (Map) */
+        .split-layout {
+            display: flex;
+            gap: 20px;
+            width: 100%;
         }
+        .left-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .right-col { flex: 1; display: flex; flex-direction: column; }
 
-        label.main-label { display: block; margin-bottom: 8px; font-size: 0.95em; font-weight: bold; color: var(--accent); }
-
-        /* Age & Gender Side by Side */
-        .inline-row { display: flex; gap: 15px; align-items: center; }
-        .inline-row > div { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .form-box { background: rgba(42, 42, 42, 0.6); padding: 15px; border-radius: 8px; position: relative; }
 
         /* Playful Age Slider */
-        .slider-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .age-display-bubble {
-            font-size: 1.5em; font-weight: bold; color: var(--accent); margin-bottom: 5px;
-            transition: color 0.3s ease;
-        }
-        input[type="range"] {
-            -webkit-appearance: none; width: 100%; background: transparent; height: 25px; outline: none; margin: 0;
-        }
-        input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%; height: 6px; background: #444; border-radius: 3px; cursor: pointer;
-        }
+        .slider-container { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .age-display-bubble { font-size: 1.5em; font-weight: bold; color: var(--accent); margin-bottom: 5px; transition: color 0.5s ease; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; background: transparent; height: 25px; outline: none; margin: 0; }
+        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: #444; border-radius: 3px; cursor: pointer; }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%;
-            background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+            background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); transition: background 0.5s ease;
         }
 
-        /* Playful Gender Toggle */
-        .gender-toggle-wrapper {
-            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 100%;
-        }
-        .gender-label { font-size: 0.9em; font-weight: bold; color: #555; transition: 0.3s ease; }
+        /* 3-Way Gender Toggle */
+        .gender-toggle-wrapper { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 5px; box-sizing: border-box; }
+        .gender-label { font-size: 0.8em; font-weight: bold; color: #555; transition: 0.3s ease; flex: 1; text-align: center; }
         .gender-label.active-male { color: var(--male-color); }
+        .gender-label.active-neutral { color: #4facfe; }
         .gender-label.active-female { color: var(--female-color); }
-
-        .switch { position: relative; display: inline-block; width: 56px; height: 28px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--male-color); transition: .4s; border-radius: 28px;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px;
-            background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        input:checked + .slider { background-color: var(--female-color); }
-        input:checked + .slider:before { transform: translateX(28px); }
-
-        /* Map Window - Cleaned Up */
-        .map-window {
-            position: relative; width: 100%; height: 200px; 
-            background: #1e1e1e; border: 1px solid #444; border-radius: 6px;
-            overflow: auto; /* Allows panning */
-            -webkit-overflow-scrolling: touch; 
-            /* Hide scrollbars for a clean look */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
-        }
-        .map-window::-webkit-scrollbar { display: none; /* Chrome, Safari */ }
         
-        #india-map { 
-            width: 150%; /* Force it to be larger than container so it pans naturally */
-            height: 150%; 
-            transform-origin: 0 0;
+        .tri-state-slider { -webkit-appearance: none; width: 100px; height: 8px; background: #333; border-radius: 4px; outline: none; margin: 0 10px; }
+        .tri-state-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            background: var(--accent); cursor: pointer; transition: background 0.5s ease; border: 2px solid #fff;
         }
 
-        /* Multiline Role Selection */
-        .role-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px;
+        /* Map Window */
+        .map-wrapper { flex-grow: 1; position: relative; background: #1e1e1e; border: 1px solid #444; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 250px; }
+        .map-scroller {
+            flex-grow: 1; width: 100%; overflow: auto; cursor: grab;
+            scrollbar-width: none; -ms-overflow-style: none; /* Hide scrollbars */
         }
+        .map-scroller::-webkit-scrollbar { display: none; }
+        .map-scroller:active { cursor: grabbing; }
+        
+        #india-map { width: 100%; height: 100%; transform-origin: 0 0; }
+
+        .zoom-controls { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 5px; z-index: 10; }
+        .zoom-btn {
+            background: rgba(0,0,0,0.8); color: white; border: 1px solid #555; border-radius: 4px;
+            width: 30px; height: 30px; font-size: 20px; line-height: 1; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; user-select: none;
+        }
+
+        /* Role Selection */
+        .role-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .role-box {
-            background: #1e1e1e; border: 1px solid #444; border-radius: 6px; padding: 8px;
-            text-align: center; font-size: 0.85em; cursor: pointer; transition: all 0.2s;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px;
-            line-height: 1.2;
+            background: #1e1e1e; border: 1px solid #444; border-radius: 6px; padding: 6px;
+            text-align: center; font-size: 0.8em; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 45px;
         }
-        .role-box small { font-size: 0.85em; color: var(--text-muted); margin-top: 2px; }
-        .role-box:hover { border-color: var(--text-muted); background: #333; }
-        .role-box.selected { border-color: var(--accent); background: rgba(79, 172, 254, 0.15); color: var(--accent); font-weight: bold; }
+        .role-box small { font-size: 0.8em; color: var(--text-muted); margin-top: 2px; }
+        .role-box.selected { border-color: var(--accent); background: rgba(255, 255, 255, 0.05); color: var(--accent); font-weight: bold; }
         .role-box.selected small { color: var(--accent); }
 
+        /* Floating Age Emoji */
+        @keyframes floatEmoji { 0% { opacity: 1; transform: translate(-50%, 0) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -60px) scale(1.5); } }
+        .age-emoji { position: absolute; top: 10px; left: 50%; font-size: 30px; animation: floatEmoji 1.5s forwards ease-out; pointer-events: none; z-index: 100; }
+
         /* Question Cards */
-        .question-card { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid transparent; }
+        .question-card { background: rgba(42, 42, 42, 0.8); padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid transparent; }
         .question-card.answered { border-left: 4px solid var(--accent); }
         .question-text { font-size: 0.95em; margin-bottom: 12px; line-height: 1.4; }
         .options-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -165,49 +150,47 @@
         .radio-btn input[type="radio"] { display: none; }
         .radio-btn label {
             display: block; text-align: center; padding: 8px; background: #333; border: 2px solid transparent;
-            border-radius: 6px; cursor: pointer; font-size: 0.85em; position: relative;
+            border-radius: 6px; cursor: pointer; font-size: 0.85em;
         }
         .radio-btn input[value="Yes"]:checked + label { background: rgba(0, 230, 118, 0.15); border-color: var(--success); color: var(--success); font-weight: bold; }
         .radio-btn input[value="No"]:checked + label { background: rgba(255, 75, 75, 0.15); border-color: var(--danger); color: var(--danger); font-weight: bold; }
         .radio-btn input[value="Maybe"]:checked + label { background: rgba(255, 234, 0, 0.15); border-color: var(--warning); color: var(--warning); font-weight: bold; }
 
-        @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-30px) scale(1.5); } }
-        .floating-smiley { position: absolute; font-size: 20px; animation: floatUpFade 1s forwards ease-out; pointer-events: none; z-index: 1000; }
-
         .nav-buttons { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
         button { padding: 12px 20px; border: none; border-radius: 6px; font-size: 0.95em; font-weight: bold; cursor: pointer; transition: 0.3s; flex: 1; }
-        .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: #000; }
+        .btn-primary { background: var(--accent); color: #000; transition: background 0.5s ease; }
         .btn-secondary { background: #444; color: white; }
         
-        /* Shrunken Submit Button */
-        .btn-submit { width: 100%; max-width: 180px; margin: 0 auto; display: block; padding: 12px; }
-        .start-btn { width: 100%; max-width: 200px; margin: 0 auto; display: block; padding: 12px; }
+        .btn-submit { width: 100%; max-width: 150px; margin: 0 auto; display: block; padding: 12px; }
+        .start-btn { width: 100%; margin: 15px auto 0 auto; display: block; padding: 12px; max-width: 300px; }
 
         .disclaimer { font-size: 0.8em; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.4; }
         .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; }
         .success-icon { font-size: 3em; color: var(--success); margin-bottom: 10px; }
 
-        /* Extreme Mobile Tightening */
+        /* Extreme Mobile Optimization (Keeping 50/50 split) */
         @media (max-width: 600px) {
             body { padding: 5px; }
-            .container { padding: 12px; margin-top: 10px; border-radius: 8px; }
-            h1 { font-size: 1.5em; }
-            h3 { font-size: 0.85em; margin-bottom: 15px; }
-            .form-group { padding: 10px; margin-bottom: 10px; }
-            .inline-row { gap: 10px; }
-            .map-window { height: 160px; } /* Kept short to limit scrolling */
-            .role-grid { grid-template-columns: repeat(3, 1fr); gap: 5px; }
-            .role-box { font-size: 0.75em; padding: 6px; min-height: 45px; }
-            .role-box small { font-size: 0.8em; }
-            .question-card { padding: 10px; }
-            .question-text { font-size: 0.9em; }
-            .radio-btn label { padding: 8px 4px; font-size: 0.8em; }
+            .container { padding: 10px; margin-top: 10px; border-radius: 8px; }
+            h1 { font-size: 1.4em; }
+            h3 { font-size: 0.8em; margin-bottom: 10px; }
+            .split-layout { gap: 8px; }
+            .form-box { padding: 8px; margin-bottom: 0; }
+            label.main-label { font-size: 0.7em; margin-bottom: 5px; }
+            .age-display-bubble { font-size: 1.2em; }
+            input[type="range"] { height: 20px; }
+            input[type="range"]::-webkit-slider-thumb { height: 16px; width: 16px; margin-top: -5px; }
+            .tri-state-slider { width: 60px; height: 6px; margin: 0 5px; }
+            .tri-state-slider::-webkit-slider-thumb { width: 14px; height: 14px; }
+            .gender-label { font-size: 0.65em; }
+            .role-grid { grid-template-columns: 1fr; gap: 4px; } /* Single column role grid on mobile left pane */
+            .role-box { padding: 4px; min-height: 35px; font-size: 0.7em; }
+            .map-wrapper { min-height: 100%; height: 100%; }
         }
     </style>
 </head>
 <body>
 
-<!-- High Visibility Top Progress Bar -->
 <div id="top-progress-container" class="top-progress-container">
     <div class="top-progress-bar" id="top-progress-bar"></div>
     <div class="top-progress-text" id="top-progress-text">0%</div>
@@ -224,51 +207,59 @@
     <!-- HOME PAGE -->
     <div id="home-section" class="section active">
         
-        <!-- Age & Gender (Side by Side) -->
-        <div class="form-group inline-row">
-            <!-- Playful Age Selection -->
-            <div>
-                <label class="main-label">1. Age:</label>
-                <div class="slider-container">
-                    <div class="age-display-bubble" id="age-display">25</div>
-                    <input type="range" id="user-age" min="17" max="80" value="25" oninput="updateAge(this.value)">
+        <div class="split-layout">
+            <!-- LEFT PANEL: Form Elements -->
+            <div class="left-col">
+                <!-- Playful Age -->
+                <div class="form-box">
+                    <label class="main-label">AGE</label>
+                    <div class="slider-container" id="age-container">
+                        <div class="age-display-bubble" id="age-display">25</div>
+                        <input type="range" id="user-age" min="17" max="80" value="25" oninput="updateAge(this.value)" onchange="dropAgeEmoji(this.value)">
+                    </div>
+                </div>
+
+                <!-- Tri-State Gender -->
+                <div class="form-box">
+                    <label class="main-label">GENDER</label>
+                    <div class="gender-toggle-wrapper">
+                        <span id="label-male" class="gender-label">MALE</span>
+                        <input type="range" min="0" max="2" value="1" class="tri-state-slider" id="user-gender-toggle" oninput="updateGenderToggle(this.value)">
+                        <span id="label-female" class="gender-label">FEMALE</span>
+                    </div>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="form-box" style="flex-grow: 1;">
+                    <label class="main-label">ROLE</label>
+                    <div class="role-grid" id="role-grid">
+                        <div class="role-box" data-value="Faculty (< 3 years)">Faculty<br><small>(< 3 yrs)</small></div>
+                        <div class="role-box" data-value="Faculty (> 3 years)">Faculty<br><small>(> 3 yrs)</small></div>
+                        <div class="role-box" data-value="Undergrad (1st year)">Undergrad<br><small>(1st yr)</small></div>
+                        <div class="role-box" data-value="Undergrad (2nd year)">Undergrad<br><small>(2nd yr)</small></div>
+                        <div class="role-box" data-value="Undergrad (3rd year)">Undergrad<br><small>(3rd yr)</small></div>
+                        <div class="role-box" data-value="Undergrad (4th year)">Undergrad<br><small>(4th yr)</small></div>
+                        <div class="role-box" data-value="Intern">Intern<br><small></small></div>
+                    </div>
                 </div>
             </div>
-            <!-- Playful Gender Toggle -->
-            <div>
-                <label class="main-label">2. Gender:</label>
-                <div class="gender-toggle-wrapper">
-                    <span id="label-male" class="gender-label active-male">Male</span>
-                    <label class="switch">
-                        <input type="checkbox" id="user-gender-toggle" onchange="updateGenderToggle()">
-                        <span class="slider"></span>
-                    </label>
-                    <span id="label-female" class="gender-label">Female</span>
+
+            <!-- RIGHT PANEL: Interactive Map -->
+            <div class="right-col">
+                <div class="form-box map-wrapper">
+                    <label class="main-label" style="text-align: center; margin-bottom: 2px;">TAP ON THE STATE WHERE YOUR INSTITUTE IS LOCATED</label>
+                    <p style="text-align: center; font-size: 0.7em; color: var(--text-muted); margin: 0 0 5px 0;">(Use + to zoom and drag to pan)</p>
+                    
+                    <div class="map-scroller" id="map-scroller">
+                        <div id="india-map"></div>
+                    </div>
+                    
+                    <div class="zoom-controls">
+                        <div class="zoom-btn" onclick="zoomMap(20)">+</div>
+                        <div class="zoom-btn" onclick="zoomMap(-20)">−</div>
+                    </div>
+                    <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin: 10px 0 0 0; font-size: 0.85em;">No state selected</p>
                 </div>
-            </div>
-        </div>
-
-        <!-- Clean, Pannable Map -->
-        <div class="form-group">
-            <label class="main-label">3. Tap on the state where your institute is located:</label>
-            <div class="map-window" id="map-window">
-                <div id="india-map"></div>
-            </div>
-            <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin: 8px 0 0 0; font-size: 0.85em;">No state selected</p>
-            <p style="text-align: center; font-size: 0.75em; color: var(--text-muted); margin-top: 4px;">(Use + to zoom and drag to pan)</p>
-        </div>
-
-        <!-- Multiline Role Selection -->
-        <div class="form-group">
-            <label class="main-label">4. Select Role:</label>
-            <div class="role-grid" id="role-grid">
-                <div class="role-box" data-value="Faculty (< 3 years)">Faculty<br><small>(< 3 yrs)</small></div>
-                <div class="role-box" data-value="Faculty (> 3 years)">Faculty<br><small>(> 3 yrs)</small></div>
-                <div class="role-box" data-value="Undergrad (1st year)">Undergrad<br><small>(1st yr)</small></div>
-                <div class="role-box" data-value="Undergrad (2nd year)">Undergrad<br><small>(2nd yr)</small></div>
-                <div class="role-box" data-value="Undergrad (3rd year)">Undergrad<br><small>(3rd yr)</small></div>
-                <div class="role-box" data-value="Undergrad (4th year)">Undergrad<br><small>(4th yr)</small></div>
-                <div class="role-box" data-value="Intern">Intern<br><small></small></div>
             </div>
         </div>
 
@@ -309,95 +300,127 @@
     const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLnWlqWIpbBqEknPQwUz-MM7Rv4c9rIIwuPdF9O1nxPKpS6Ed7eQkbU4ETklqaAiM/exec';
 
     // ----------------------------------------------------
-    // PLAYFUL INPUT LOGIC
+    // PLAYFUL INPUT LOGIC (Tri-State Theme & Emojis)
     // ----------------------------------------------------
     let currentUserAge = "25";
-    let currentUserGender = "Male"; // Default
+    let currentUserGender = "Prefer not to say"; // Default center
+
+    // Set initial center color
+    document.getElementById('label-male').style.color = "#555";
+    document.getElementById('label-female').style.color = "#555";
 
     function updateAge(val) {
         currentUserAge = val;
         document.getElementById('age-display').innerText = val;
     }
 
-    function updateGenderToggle() {
-        const toggle = document.getElementById('user-gender-toggle');
+    function dropAgeEmoji(val) {
+        const container = document.getElementById('age-container');
+        let emojiChar = '🌱';
+        if (val >= 26 && val <= 40) emojiChar = '🚀';
+        else if (val >= 41 && val <= 60) emojiChar = '🏆';
+        else if (val > 60) emojiChar = '👑';
+
+        const emoji = document.createElement('div');
+        emoji.className = 'age-emoji';
+        emoji.innerText = emojiChar;
+        container.appendChild(emoji);
+        setTimeout(() => emoji.remove(), 1500);
+    }
+
+    function updateGenderToggle(val) {
         const labelMale = document.getElementById('label-male');
         const labelFemale = document.getElementById('label-female');
 
-        if (toggle.checked) {
-            currentUserGender = "Female";
-            labelMale.classList.remove('active-male');
-            labelFemale.classList.add('active-female');
-            // Change Age slider color playfully to match
-            document.documentElement.style.setProperty('--accent', 'var(--female-color)');
-            document.getElementById('age-display').style.color = 'var(--female-color)';
-        } else {
+        if (val == 0) {
             currentUserGender = "Male";
-            labelFemale.classList.remove('active-female');
-            labelMale.classList.add('active-male');
-            // Revert Age slider color back to blue
             document.documentElement.style.setProperty('--accent', 'var(--male-color)');
-            document.getElementById('age-display').style.color = 'var(--male-color)';
+            labelMale.style.color = 'var(--male-color)'; labelFemale.style.color = '#555';
+        } else if (val == 1) {
+            currentUserGender = "Prefer not to say";
+            document.documentElement.style.setProperty('--accent', '#4facfe'); // Neutral Blue
+            labelMale.style.color = '#555'; labelFemale.style.color = '#555';
+        } else {
+            currentUserGender = "Female";
+            document.documentElement.style.setProperty('--accent', 'var(--female-color)');
+            labelFemale.style.color = 'var(--female-color)'; labelMale.style.color = '#555';
+        }
+        
+        // Update map color immediately if state is selected
+        if(geoChart && geoOptions) {
+            geoOptions.colorAxis.colors[1] = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+            geoChart.draw(geoData, geoOptions);
         }
     }
 
+    // Custom Drag Scroll for Map
+    const scroller = document.getElementById('map-scroller');
+    let isDown = false; let startX; let startY; let scrollLeft; let scrollTop;
+    scroller.addEventListener('mousedown', (e) => {
+        isDown = true; startX = e.pageX - scroller.offsetLeft; startY = e.pageY - scroller.offsetTop;
+        scrollLeft = scroller.scrollLeft; scrollTop = scroller.scrollTop;
+    });
+    scroller.addEventListener('mouseleave', () => { isDown = false; });
+    scroller.addEventListener('mouseup', () => { isDown = false; });
+    scroller.addEventListener('mousemove', (e) => {
+        if (!isDown) return; e.preventDefault();
+        const x = e.pageX - scroller.offsetLeft; const y = e.pageY - scroller.offsetTop;
+        scroller.scrollLeft = scrollLeft - (x - startX); scroller.scrollTop = scrollTop - (y - startY);
+    });
+
     // ----------------------------------------------------
-    // GOOGLE GEOCHART MAP LOGIC
+    // GOOGLE GEOCHART MAP LOGIC (Zoom & Pan)
     // ----------------------------------------------------
+    let currentMapWidth = 100;
+    function zoomMap(delta) {
+        currentMapWidth += delta;
+        if (currentMapWidth < 100) currentMapWidth = 100;
+        if (currentMapWidth > 300) currentMapWidth = 300;
+        
+        const mapElement = document.getElementById('india-map');
+        mapElement.style.width = currentMapWidth + '%';
+        mapElement.style.height = currentMapWidth + '%';
+
+        if(geoChart && geoData && geoOptions) geoChart.draw(geoData, geoOptions);
+    }
+
     let selectedStateName = "";
-    let geoChart;
-    let geoData;
-    let geoOptions;
+    let geoChart; let geoData; let geoOptions;
 
     google.charts.load('current', { 'packages':['geochart'] });
     google.charts.setOnLoadCallback(drawRegionsMap);
 
     function drawRegionsMap() {
       geoData = new google.visualization.DataTable();
-      geoData.addColumn('string', 'StateCode');
-      geoData.addColumn('number', 'Selected');
-      geoData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
+      geoData.addColumn('string', 'StateCode'); geoData.addColumn('number', 'Selected'); geoData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
 
       const states = [
-        ['IN-AP', 'Andhra Pradesh'], ['IN-AR', 'Arunachal Pradesh'], ['IN-AS', 'Assam'],
-        ['IN-BR', 'Bihar'], ['IN-CT', 'Chhattisgarh'], ['IN-GA', 'Goa'], ['IN-GJ', 'Gujarat'],
-        ['IN-HR', 'Haryana'], ['IN-HP', 'Himachal Pradesh'], ['IN-JH', 'Jharkhand'],
-        ['IN-KA', 'Karnataka'], ['IN-KL', 'Kerala'], ['IN-MP', 'Madhya Pradesh'],
-        ['IN-MH', 'Maharashtra'], ['IN-MN', 'Manipur'], ['IN-ML', 'Meghalaya'],
-        ['IN-MZ', 'Mizoram'], ['IN-NL', 'Nagaland'], ['IN-OR', 'Odisha'], ['IN-PB', 'Punjab'],
-        ['IN-RJ', 'Rajasthan'], ['IN-SK', 'Sikkim'], ['IN-TN', 'Tamil Nadu'],
-        ['IN-TG', 'Telangana'], ['IN-TR', 'Tripura'], ['IN-UP', 'Uttar Pradesh'],
-        ['IN-UT', 'Uttarakhand'], ['IN-WB', 'West Bengal'], ['IN-AN', 'Andaman & Nicobar'],
-        ['IN-CH', 'Chandigarh'], ['IN-DN', 'Dadra & Nagar Haveli'],
-        ['IN-DL', 'Delhi'], ['IN-JK', 'Jammu & Kashmir'], ['IN-LA', 'Ladakh'],
-        ['IN-LD', 'Lakshadweep'], ['IN-PY', 'Puducherry']
+        ['IN-AP', 'Andhra Pradesh'], ['IN-AR', 'Arunachal Pradesh'], ['IN-AS', 'Assam'], ['IN-BR', 'Bihar'], ['IN-CT', 'Chhattisgarh'], ['IN-GA', 'Goa'], ['IN-GJ', 'Gujarat'],
+        ['IN-HR', 'Haryana'], ['IN-HP', 'Himachal Pradesh'], ['IN-JH', 'Jharkhand'], ['IN-KA', 'Karnataka'], ['IN-KL', 'Kerala'], ['IN-MP', 'Madhya Pradesh'],
+        ['IN-MH', 'Maharashtra'], ['IN-MN', 'Manipur'], ['IN-ML', 'Meghalaya'], ['IN-MZ', 'Mizoram'], ['IN-NL', 'Nagaland'], ['IN-OR', 'Odisha'], ['IN-PB', 'Punjab'],
+        ['IN-RJ', 'Rajasthan'], ['IN-SK', 'Sikkim'], ['IN-TN', 'Tamil Nadu'], ['IN-TG', 'Telangana'], ['IN-TR', 'Tripura'], ['IN-UP', 'Uttar Pradesh'],
+        ['IN-UT', 'Uttarakhand'], ['IN-WB', 'West Bengal'], ['IN-AN', 'Andaman & Nicobar'], ['IN-CH', 'Chandigarh'], ['IN-DN', 'Dadra & Nagar Haveli'],
+        ['IN-DL', 'Delhi'], ['IN-JK', 'Jammu & Kashmir'], ['IN-LA', 'Ladakh'], ['IN-LD', 'Lakshadweep'], ['IN-PY', 'Puducherry']
       ];
-
       states.forEach(state => geoData.addRow([state[0], 0, state[1]]));
 
       geoOptions = {
-        region: 'IN', domain: 'IN', displayMode: 'regions', resolution: 'provinces',
-        backgroundColor: 'transparent', datalessRegionColor: '#1e1e1e', defaultColor: '#333',
-        colorAxis: { colors: ['#333', '#4facfe'], minValue: 0, maxValue: 1 },
-        legend: 'none', keepAspectRatio: true,
-        tooltip: { trigger: 'none' } 
+        region: 'IN', domain: 'IN', displayMode: 'regions', resolution: 'provinces', backgroundColor: 'transparent', datalessRegionColor: '#1e1e1e', defaultColor: '#333',
+        colorAxis: { colors: ['#333', '#4facfe'], minValue: 0, maxValue: 1 }, legend: 'none', keepAspectRatio: true, tooltip: { trigger: 'none' } 
       };
 
       geoChart = new google.visualization.GeoChart(document.getElementById('india-map'));
 
       google.visualization.events.addListener(geoChart, 'regionClick', function(eventData) {
         let rowIndex = -1;
-        for (let i = 0; i < geoData.getNumberOfRows(); i++) {
-          if (geoData.getValue(i, 0) === eventData.region) { rowIndex = i; break; }
-        }
+        for (let i = 0; i < geoData.getNumberOfRows(); i++) { if (geoData.getValue(i, 0) === eventData.region) { rowIndex = i; break; } }
         if (rowIndex !== -1) {
           for (let i = 0; i < geoData.getNumberOfRows(); i++) geoData.setValue(i, 1, 0);
           geoData.setValue(rowIndex, 1, 1);
           selectedStateName = geoData.getValue(rowIndex, 2);
           document.getElementById('selected-state-display').innerText = selectedStateName;
           
-          // Match selected state color to current gender accent
-          geoOptions.colorAxis.colors[1] = currentUserGender === "Female" ? '#ff61a6' : '#4facfe';
+          geoOptions.colorAxis.colors[1] = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
           geoChart.draw(geoData, geoOptions);
         }
       });
@@ -407,58 +430,29 @@
     // ----------------------------------------------------
     // THEME & SURVEY LOGIC
     // ----------------------------------------------------
-    // Dynamic Background Gradients for each page
-    const bgGradients = [
-        'radial-gradient(circle at top left, rgba(79, 172, 254, 0.15), #121212 60%)', // Blueish
-        'radial-gradient(circle at top right, rgba(142, 45, 226, 0.15), #121212 60%)', // Purplish
-        'radial-gradient(circle at bottom left, rgba(0, 242, 254, 0.15), #121212 60%)', // Tealish
-        'radial-gradient(circle at bottom right, rgba(255, 97, 166, 0.15), #121212 60%)' // Pinkish
-    ];
-
     const facultyQuestions = [
-        "Peers and senior faculty members influence my actions against academic misconduct.",
-        "I wish to report academic dishonesty, but I am bound by institutional culture.",
-        "I do not wish to indulge in the reporting of academic misconduct, as I am afraid that it would make students repel me.",
-        "I do not wish to indulge in the reporting of academic misconduct, as it takes my valuable time because the process of resolution is tedious and long.",
-        "I have faced one or more instances in which I received no support from the institutional supervisors after reporting a case of academic misconduct.",
-        "I believe that training on academic integrity must be mandatory for both faculty and students.",
-        "I believe that failing to uphold academic integrity can compromise a student’s future professional career.",
-        "I choose not to report academic dishonesty, as I myself had previously engaged in dishonest activities as a student.",
-        "I believe the lack of fear of the consequences of academic dishonesty encourages students to engage in dishonesty even more.",
-        "The lack of academic integrity often makes me ponder my career choice.",
-        "I take it as a challenge to restore academic integrity to the best of my abilities when I feel a resolution must be reached.",
-        "I do not think that imposing a code of conduct at an institutional level will promote the maintenance of academic integrity.",
-        "I have witnessed individuals who take to academic integrity for personal gains without thinking of how immoral or legitimate a student’s action is.",
-        "I myself engage in or have witnessed fellow faculty members indulge in pleasing students more instead of imposing good ethics.",
-        "I believe immoral acts committed by the students are heavily curbed or silenced by the administrators or the top brass themselves.",
-        "As a faculty member, I myself am unaware of the ethical policies of the institute I serve, so much so that I doubt they exist.",
-        "I choose not to report a case of academic dishonesty because the faculty is never rewarded for doing the right thing.",
-        "I believe that the institute I serve believes in the status quo, whose administration would game the system to avoid unnecessary confrontations.",
-        "I think every student should be asked to sign a statement ahead of their admission to a professional course, which would state the repercussions and sanctions imposed for engaging in different levels of academic dishonesty.",
-        "I believe that students should be involved in the formal process of constituting an ethical code of conduct in academia."
+        "Peers and senior faculty members influence my actions against academic misconduct.", "I wish to report academic dishonesty, but I am bound by institutional culture.",
+        "I do not wish to indulge in the reporting of academic misconduct, as I am afraid that it would make students repel me.", "I do not wish to indulge in the reporting of academic misconduct, as it takes my valuable time because the process of resolution is tedious and long.",
+        "I have faced one or more instances in which I received no support from the institutional supervisors after reporting a case of academic misconduct.", "I believe that training on academic integrity must be mandatory for both faculty and students.",
+        "I believe that failing to uphold academic integrity can compromise a student’s future professional career.", "I choose not to report academic dishonesty, as I myself had previously engaged in dishonest activities as a student.",
+        "I believe the lack of fear of the consequences of academic dishonesty encourages students to engage in dishonesty even more.", "The lack of academic integrity often makes me ponder my career choice.",
+        "I take it as a challenge to restore academic integrity to the best of my abilities when I feel a resolution must be reached.", "I do not think that imposing a code of conduct at an institutional level will promote the maintenance of academic integrity.",
+        "I have witnessed individuals who take to academic integrity for personal gains without thinking of how immoral or legitimate a student’s action is.", "I myself engage in or have witnessed fellow faculty members indulge in pleasing students more instead of imposing good ethics.",
+        "I believe immoral acts committed by the students are heavily curbed or silenced by the administrators or the top brass themselves.", "As a faculty member, I myself am unaware of the ethical policies of the institute I serve, so much so that I doubt they exist.",
+        "I choose not to report a case of academic dishonesty because the faculty is never rewarded for doing the right thing.", "I believe that the institute I serve believes in the status quo, whose administration would game the system to avoid unnecessary confrontations.",
+        "I think every student should be asked to sign a statement ahead of their admission to a professional course, which would state the repercussions and sanctions imposed for engaging in different levels of academic dishonesty.", "I believe that students should be involved in the formal process of constituting an ethical code of conduct in academia."
     ];
-
     const studentQuestions = [
-        "I was informed and know about the importance of maintaining academic integrity while being enrolled in a professional course.",
-        "I have witnessed academic dishonesty or illegal behavior by my peers, but have chosen not to report it.",
-        "I myself have committed academic misconduct and have faced stringent repercussions for the same.",
-        "I myself have committed academic misconduct, but got away with it, and continue to manipulate the system per my understanding.",
-        "I see my seniors engage in academic dishonesty and get away with it, and realize that nothing actually happens if one gets caught engaging in fraudulent student activities.",
-        "I believe it should be fair for me to engage in academic misconduct if my seniors commit it and get away with it.",
-        "I am well aware of the various punishments and sanctions that I can face if I commit any academic misconduct.",
-        "I believe it is easy to rig a faculty member or the administration and escape after committing academic dishonesty.",
-        "I think resorting to any form of academic dishonesty by myself or my colleagues will lead to our compromising the well-being of our patients in the future.",
-        "I choose to be with peers and seniors who follow academic honesty, understand the morals of academia, and respect the conscious educational nature of the institute.",
-        "I believe it is logical to ban the use of social media in an academic setting.",
-        "I would expect my institute to provide some guidelines on what behavior is considered acceptable or unacceptable to maintain academic integrity.",
-        "I choose not to report academic dishonesty as it has greater social consequences, and would rather allow someone to impact the institutional culture negatively.",
-        "It is relatively easy to coerce a faculty member into a level of friendship that has helped me or several of my colleagues escape scenarios wherein they would otherwise face major reprimands/sanctions/punishments/repercussions.",
-        "I believe the lack of policies on the use or misuse of Artificial Intelligence in my institute promotes academic dishonesty.",
-        "I think academic dishonesty is very weakly monitored in my institute, with a lack of clear operational definitions on what constitutes moral student conduct.",
-        "There is a student committee or task force in my institute that ensures that academic misconduct is documented, monitored, and followed up on.",
-        "I engage in academic misconduct without thinking of the repercussions and believe that they add to creating memories of my term as a student in a formal education setting.",
-        "I do not engage in academic dishonesty because of the values instilled in me by my parents, my schooling, and the awareness of the role I play as an individual who is still undergoing training.",
-        "I think pledging to follow the morals of academic integrity, like the Hippocratic Oath, during orientation will have a positive impact on the academic culture."
+        "I was informed and know about the importance of maintaining academic integrity while being enrolled in a professional course.", "I have witnessed academic dishonesty or illegal behavior by my peers, but have chosen not to report it.",
+        "I myself have committed academic misconduct and have faced stringent repercussions for the same.", "I myself have committed academic misconduct, but got away with it, and continue to manipulate the system per my understanding.",
+        "I see my seniors engage in academic dishonesty and get away with it, and realize that nothing actually happens if one gets caught engaging in fraudulent student activities.", "I believe it should be fair for me to engage in academic misconduct if my seniors commit it and get away with it.",
+        "I am well aware of the various punishments and sanctions that I can face if I commit any academic misconduct.", "I believe it is easy to rig a faculty member or the administration and escape after committing academic dishonesty.",
+        "I think resorting to any form of academic dishonesty by myself or my colleagues will lead to our compromising the well-being of our patients in the future.", "I choose to be with peers and seniors who follow academic honesty, understand the morals of academia, and respect the conscious educational nature of the institute.",
+        "I believe it is logical to ban the use of social media in an academic setting.", "I would expect my institute to provide some guidelines on what behavior is considered acceptable or unacceptable to maintain academic integrity.",
+        "I choose not to report academic dishonesty as it has greater social consequences, and would rather allow someone to impact the institutional culture negatively.", "It is relatively easy to coerce a faculty member into a level of friendship that has helped me or several of my colleagues escape scenarios wherein they would otherwise face major reprimands/sanctions/punishments/repercussions.",
+        "I believe the lack of policies on the use or misuse of Artificial Intelligence in my institute promotes academic dishonesty.", "I think academic dishonesty is very weakly monitored in my institute, with a lack of clear operational definitions on what constitutes moral student conduct.",
+        "There is a student committee or task force in my institute that ensures that academic misconduct is documented, monitored, and followed up on.", "I engage in academic misconduct without thinking of the repercussions and believe that they add to creating memories of my term as a student in a formal education setting.",
+        "I do not engage in academic dishonesty because of the values instilled in me by my parents, my schooling, and the awareness of the role I play as an individual who is still undergoing training.", "I think pledging to follow the morals of academic integrity, like the Hippocratic Oath, during orientation will have a positive impact on the academic culture."
     ];
 
     let currentRole = ""; let activeQuestions = []; let currentPage = 0; const questionsPerPage = 5; const totalQuestions = 20; let userResponses = {};
@@ -478,8 +472,7 @@
     }
 
     function changeBackground() {
-        // Cycle through the subtle gradients based on the current page
-        document.body.style.backgroundImage = bgGradients[currentPage % bgGradients.length];
+        document.body.className = `theme-${currentPage % 4}`;
     }
 
     function startSurvey() {
@@ -545,22 +538,17 @@
         if (currentPage < (totalQuestions / questionsPerPage) - 1) { 
             currentPage++; changeBackground(); renderQuestions(); window.scrollTo(0, 0); 
         } else { 
-            document.body.style.backgroundImage = 'none'; // Clear background on submit page
-            switchSection('submit-section'); window.scrollTo(0, 0); 
+            document.body.className = ''; switchSection('submit-section'); window.scrollTo(0, 0); 
         }
     }
 
-    function prevPage() { 
-        if (currentPage > 0) { 
-            currentPage--; changeBackground(); renderQuestions(); window.scrollTo(0, 0); 
-        } 
-    }
+    function prevPage() { if (currentPage > 0) { currentPage--; changeBackground(); renderQuestions(); window.scrollTo(0, 0); } }
 
     function submitData() {
         const btn = document.getElementById('submit-btn'); btn.innerText = "Submitting..."; btn.disabled = true;
         fetch(GOOGLE_APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(userResponses) })
         .then(() => switchSection('thanks-section'))
-        .catch(() => { alert("Error submitting. Please try again."); btn.innerText = "Submit Your Response"; btn.disabled = false; });
+        .catch(() => { alert("Error submitting. Please try again."); btn.innerText = "Submit"; btn.disabled = false; });
     }
 </script>
 </body>
