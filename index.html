@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BRAIDS Interactive Tool</title>
     
-    <!-- Google Charts (For the Interactive India Map) -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <style>
@@ -26,18 +25,19 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
         }
 
+        /* Tighter Container for minimal scrolling */
         .container {
             max-width: 800px;
             width: 100%;
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
@@ -45,291 +45,145 @@
             position: relative;
         }
 
-        h1 {
-            text-align: center;
-            color: var(--accent);
-            margin-bottom: 5px;
-            font-size: 2em;
-        }
-
-        h3 {
-            text-align: center;
-            font-weight: 400;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
+        h1 { text-align: center; color: var(--accent); margin: 0 0 5px 0; font-size: 1.8em; }
+        h3 { text-align: center; font-weight: 400; color: var(--text-muted); margin: 0 0 20px 0; font-size: 1em; }
 
         .header-warning {
-            background-color: rgba(255, 75, 75, 0.1);
-            border-left: 4px solid var(--danger);
-            padding: 15px;
-            font-size: 0.9em;
-            margin-bottom: 25px;
-            line-height: 1.5;
-            border-radius: 4px;
+            background-color: rgba(255, 75, 75, 0.1); border-left: 4px solid var(--danger);
+            padding: 10px; font-size: 0.85em; margin-bottom: 15px; border-radius: 4px;
         }
 
-        .section {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Homepage Inputs */
+        /* COMPACT HOMEPAGE STYLING */
         .form-group {
-            margin-bottom: 25px;
-            background: #2a2a2a;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        label.main-label {
-            display: block;
             margin-bottom: 15px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        .role-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 10px;
-        }
-
-        .role-box {
-            background: #1e1e1e;
-            border: 2px solid #444;
+            background: #2a2a2a;
+            padding: 15px;
             border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            font-size: 0.85em; 
-            cursor: pointer;
-            transition: all 0.2s ease;
+        }
+
+        label.main-label { display: block; margin-bottom: 8px; font-size: 1em; font-weight: bold; color: var(--accent); }
+
+        /* Row 1: Age and Gender Inline */
+        .inline-row {
             display: flex;
+            gap: 15px;
             align-items: center;
-            justify-content: center;
-            min-height: 50px; 
-            user-select: none;
         }
+        .inline-row > div { flex: 1; }
 
-        .role-box:hover {
-            border-color: var(--text-muted);
-            background: #333;
-        }
-
-        .role-box.selected {
-            border-color: var(--accent);
-            background: rgba(79, 172, 254, 0.15);
-            color: var(--accent);
-            font-weight: bold;
-        }
-
-        input[type="number"] {
+        input[type="number"], select {
             width: 100%;
-            max-width: 200px;
-            padding: 12px;
+            padding: 10px;
             border-radius: 6px;
             border: 1px solid #444;
             background: #1e1e1e;
             color: white;
-            font-size: 1em;
+            font-size: 0.95em;
             outline: none;
+            box-sizing: border-box;
         }
+        input[type="number"]:focus, select:focus { border-color: var(--accent); }
 
-        input[type="number"]:focus {
-            border-color: var(--accent);
-        }
-
-        /* Interactive Map Container */
-        #india-map {
+        /* Row 2: Zoomable Map */
+        .map-window {
+            position: relative;
             width: 100%;
-            height: 400px;
-            background-color: transparent;
-            border-radius: 8px;
+            height: 220px; /* Shorter height to prevent scrolling */
+            background: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 6px;
             overflow: hidden;
         }
         
-        /* Map Tooltip Fix for Dark Mode */
-        .google-visualization-tooltip {
-            background-color: #1e1e1e !important;
-            border: 1px solid #4facfe !important;
-            color: #fff !important;
-            font-family: inherit !important;
-            border-radius: 4px;
+        #map-scalable-container {
+            width: 100%;
+            height: 100%;
+            transform-origin: center center;
+            transition: transform 0.2s ease;
         }
-        .google-visualization-tooltip-item span {
-            color: #fff !important;
+
+        #india-map { width: 100%; height: 100%; }
+
+        .zoom-controls {
+            position: absolute;
+            top: 10px; right: 10px;
+            display: flex; flex-direction: column; gap: 5px;
         }
+        .zoom-btn {
+            background: rgba(0,0,0,0.7); color: white; border: 1px solid #555; border-radius: 4px;
+            width: 30px; height: 30px; font-size: 18px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .zoom-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+        /* Row 3: Role Grid - Readable but compact */
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+        }
+        .role-box {
+            background: #1e1e1e; border: 1px solid #444; border-radius: 6px; padding: 10px;
+            text-align: center; font-size: 0.9em; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; min-height: 45px;
+        }
+        .role-box:hover { border-color: var(--text-muted); background: #333; }
+        .role-box.selected { border-color: var(--accent); background: rgba(79, 172, 254, 0.15); color: var(--accent); font-weight: bold; }
 
         /* Vertical Progress Bar */
         .v-progress-container {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 60vh;
-            background-color: #2a2a2a;
-            border-radius: 10px;
-            display: none; 
-            flex-direction: column;
-            justify-content: flex-end;
-            z-index: 100;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            position: fixed; right: 10px; top: 50%; transform: translateY(-50%); width: 8px; height: 50vh;
+            background-color: #2a2a2a; border-radius: 10px; display: none; flex-direction: column; justify-content: flex-end; z-index: 100;
         }
+        .v-progress-bar { width: 100%; background: linear-gradient(0deg, var(--accent) 0%, var(--accent-hover) 100%); height: 0%; border-radius: 10px; transition: height 0.4s ease; }
+        .v-progress-text { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.75em; font-weight: bold; color: var(--accent); }
 
-        .v-progress-bar {
-            width: 100%;
-            background: linear-gradient(0deg, var(--accent) 0%, var(--accent-hover) 100%);
-            height: 0%;
-            border-radius: 10px;
-            transition: height 0.4s ease;
-        }
-
-        .v-progress-text {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8em;
-            font-weight: bold;
-            color: var(--accent);
-            white-space: nowrap;
-        }
-
-        /* Form Controls */
-        .question-card {
-            background: #2a2a2a;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            transition: border-left 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .question-card.answered {
-            border-left: 4px solid var(--accent);
-        }
-
-        .question-text {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-
-        .options-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .radio-btn {
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .radio-btn input[type="radio"] {
-            display: none;
-        }
-
+        /* Question Cards */
+        .question-card { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid transparent; }
+        .question-card.answered { border-left: 4px solid var(--accent); }
+        .question-text { font-size: 1em; margin-bottom: 12px; line-height: 1.4; }
+        .options-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .radio-btn { flex: 1; min-width: 70px; }
+        .radio-btn input[type="radio"] { display: none; }
         .radio-btn label {
-            display: block;
-            text-align: center;
-            padding: 12px;
-            background: #333;
-            border: 2px solid transparent;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-            position: relative;
+            display: block; text-align: center; padding: 10px; background: #333; border: 2px solid transparent;
+            border-radius: 6px; cursor: pointer; font-size: 0.9em; position: relative;
         }
+        .radio-btn input[value="Yes"]:checked + label { background: rgba(0, 230, 118, 0.15); border-color: var(--success); color: var(--success); font-weight: bold; }
+        .radio-btn input[value="No"]:checked + label { background: rgba(255, 75, 75, 0.15); border-color: var(--danger); color: var(--danger); font-weight: bold; }
+        .radio-btn input[value="Maybe"]:checked + label { background: rgba(255, 234, 0, 0.15); border-color: var(--warning); color: var(--warning); font-weight: bold; }
 
-        .radio-btn input[value="Yes"]:checked + label {
-            background: rgba(0, 230, 118, 0.15); border-color: var(--success); color: var(--success); font-weight: bold;
-        }
-        .radio-btn input[value="No"]:checked + label {
-            background: rgba(255, 75, 75, 0.15); border-color: var(--danger); color: var(--danger); font-weight: bold;
-        }
-        .radio-btn input[value="Maybe"]:checked + label {
-            background: rgba(255, 234, 0, 0.15); border-color: var(--warning); color: var(--warning); font-weight: bold;
-        }
+        /* Floating Smiley */
+        @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-30px) scale(1.5); } }
+        .floating-smiley { position: absolute; font-size: 20px; animation: floatUpFade 1s forwards ease-out; pointer-events: none; z-index: 1000; }
 
-        /* Floating Smiley Animation */
-        @keyframes floatUpFade {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
-        }
-        .floating-smiley {
-            position: absolute;
-            font-size: 24px;
-            animation: floatUpFade 1s forwards ease-out;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            gap: 15px;
-        }
-
-        button {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .nav-buttons button { flex: 1; }
+        /* Buttons */
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
+        button { padding: 12px 20px; border: none; border-radius: 6px; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.3s; flex: 1; }
         .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: #000; }
-        .btn-primary:hover { box-shadow: 0 0 15px rgba(79, 172, 254, 0.5); transform: translateY(-2px); }
         .btn-secondary { background: #444; color: white; }
-        .btn-secondary:hover { background: #555; }
-        
-        .btn-submit, .start-btn {
-            width: 100%;
-            max-width: 250px;
-            margin: 0 auto;
-            display: block;
-        }
+        .btn-submit, .start-btn { width: 100%; max-width: 300px; margin: 0 auto; display: block; padding: 15px; }
 
-        .disclaimer {
-            font-size: 0.9em; color: var(--text-muted); text-align: center; margin-bottom: 25px; line-height: 1.6; max-width: 600px;
-        }
-        .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; }
-        .success-icon { font-size: 4em; color: var(--success); margin-bottom: 20px; }
+        .disclaimer { font-size: 0.85em; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5; }
+        .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; }
+        .success-icon { font-size: 3em; color: var(--success); margin-bottom: 10px; }
 
-        /* Mobile Adjustments */
         @media (max-width: 600px) {
-            body { padding: 10px; }
-            .container { padding: 20px 15px; margin-right: 15px; width: calc(100% - 15px); }
-            .nav-buttons { flex-direction: column-reverse; }
-            .nav-buttons button { width: 100%; }
-            .btn-submit, .start-btn { max-width: 100%; }
-            .v-progress-container { right: 5px; width: 6px; height: 50vh; }
-            .v-progress-text { font-size: 0.7em; }
-            #india-map { height: 300px; }
+            .container { padding: 15px; margin-right: 15px; width: calc(100% - 15px); }
+            .inline-row { flex-direction: column; gap: 10px; }
+            .map-window { height: 180px; }
+            .role-grid { grid-template-columns: repeat(2, 1fr); }
+            .role-box { font-size: 0.85em; padding: 8px; }
+            .v-progress-container { right: 2px; width: 6px; height: 40vh; }
         }
     </style>
 </head>
 <body>
 
-<!-- Vertical Progress Bar -->
 <div id="v-progress-container" class="v-progress-container">
     <div class="v-progress-text" id="v-progress-text">0%</div>
     <div class="v-progress-bar" id="v-progress-bar"></div>
@@ -346,20 +200,42 @@
     <!-- HOME PAGE -->
     <div id="home-section" class="section active">
         
-        <div class="form-group">
-            <label class="main-label" for="user-age">1. Please state your age:</label>
-            <input type="number" id="user-age" placeholder="e.g. 24" min="17" max="100">
+        <!-- Age & Gender (Same Line) -->
+        <div class="form-group inline-row">
+            <div>
+                <label class="main-label" for="user-age">1. Age:</label>
+                <input type="number" id="user-age" placeholder="Enter age" min="17" max="100">
+            </div>
+            <div>
+                <label class="main-label" for="user-gender">2. Gender:</label>
+                <select id="user-gender">
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
         </div>
 
+        <!-- Zoomable Map -->
         <div class="form-group">
-            <label class="main-label">2. Select the state where your institute is located:</label>
-            <p style="font-size: 0.85em; color: var(--text-muted); margin-top: -10px;">Tap/Click on the political map below.</p>
-            <div id="india-map"></div>
-            <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin-top: 10px;">No state selected</p>
+            <label class="main-label">3. Select State of Institute:</label>
+            <div class="map-window">
+                <div id="map-scalable-container">
+                    <div id="india-map"></div>
+                </div>
+                <div class="zoom-controls">
+                    <div class="zoom-btn" onclick="zoomMap(0.2)">+</div>
+                    <div class="zoom-btn" onclick="zoomMap(-0.2)">−</div>
+                </div>
+            </div>
+            <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin: 10px 0 0 0; font-size: 0.9em;">No state selected</p>
         </div>
 
+        <!-- Role Selection -->
         <div class="form-group">
-            <label class="main-label">3. Select your current role:</label>
+            <label class="main-label">4. Select Role:</label>
             <div class="role-grid" id="role-grid">
                 <div class="role-box" data-value="Faculty (< 3 years)">Faculty (< 3 yrs)</div>
                 <div class="role-box" data-value="Faculty (> 3 years)">Faculty (> 3 yrs)</div>
@@ -405,7 +281,18 @@
 
 <script>
     // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnbD-DkqRDKWU8-LPd0pm5ykDx7gdyseuCKebQVKDmwlBpvxgmktedgRDPaDIP1o7W/exec';
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLnWlqWIpbBqEknPQwUz-MM7Rv4c9rIIwuPdF9O1nxPKpS6Ed7eQkbU4ETklqaAiM/exec';
+
+    // ----------------------------------------------------
+    // MAP ZOOM LOGIC
+    // ----------------------------------------------------
+    let currentZoom = 1;
+    function zoomMap(delta) {
+        currentZoom += delta;
+        if (currentZoom < 1) currentZoom = 1;
+        if (currentZoom > 3) currentZoom = 3;
+        document.getElementById('map-scalable-container').style.transform = `scale(${currentZoom})`;
+    }
 
     // ----------------------------------------------------
     // GOOGLE GEOCHART MAP LOGIC
@@ -415,9 +302,7 @@
     let geoData;
     let geoOptions;
 
-    google.charts.load('current', {
-      'packages':['geochart'],
-    });
+    google.charts.load('current', { 'packages':['geochart'] });
     google.charts.setOnLoadCallback(drawRegionsMap);
 
     function drawRegionsMap() {
@@ -426,7 +311,6 @@
       geoData.addColumn('number', 'Selected');
       geoData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
 
-      // All states of India with their ISO codes
       const states = [
         ['IN-AP', 'Andhra Pradesh'], ['IN-AR', 'Arunachal Pradesh'], ['IN-AS', 'Assam'],
         ['IN-BR', 'Bihar'], ['IN-CT', 'Chhattisgarh'], ['IN-GA', 'Goa'], ['IN-GJ', 'Gujarat'],
@@ -436,73 +320,41 @@
         ['IN-MZ', 'Mizoram'], ['IN-NL', 'Nagaland'], ['IN-OR', 'Odisha'], ['IN-PB', 'Punjab'],
         ['IN-RJ', 'Rajasthan'], ['IN-SK', 'Sikkim'], ['IN-TN', 'Tamil Nadu'],
         ['IN-TG', 'Telangana'], ['IN-TR', 'Tripura'], ['IN-UP', 'Uttar Pradesh'],
-        ['IN-UT', 'Uttarakhand'], ['IN-WB', 'West Bengal'], ['IN-AN', 'Andaman and Nicobar Islands'],
-        ['IN-CH', 'Chandigarh'], ['IN-DN', 'Dadra and Nagar Haveli and Daman and Diu'],
-        ['IN-DL', 'Delhi'], ['IN-JK', 'Jammu and Kashmir'], ['IN-LA', 'Ladakh'],
+        ['IN-UT', 'Uttarakhand'], ['IN-WB', 'West Bengal'], ['IN-AN', 'Andaman & Nicobar'],
+        ['IN-CH', 'Chandigarh'], ['IN-DN', 'Dadra & Nagar Haveli'],
+        ['IN-DL', 'Delhi'], ['IN-JK', 'Jammu & Kashmir'], ['IN-LA', 'Ladakh'],
         ['IN-LD', 'Lakshadweep'], ['IN-PY', 'Puducherry']
       ];
 
-      states.forEach(state => {
-         geoData.addRow([state[0], 0, state[1]]);
-      });
+      states.forEach(state => geoData.addRow([state[0], 0, state[1]]));
 
       geoOptions = {
-        region: 'IN', // Display India
-        domain: 'IN',
-        displayMode: 'regions',
-        resolution: 'provinces',
-        backgroundColor: 'transparent',
-        datalessRegionColor: '#1e1e1e', // Dark color for background
-        defaultColor: '#333333', // Default unselected color
-        colorAxis: {
-            colors: ['#333333', '#4facfe'], // 0 = unselected, 1 = selected (blue)
-            minValue: 0,
-            maxValue: 1
-        },
-        legend: 'none', // Hide the color scale bar
-        keepAspectRatio: true,
+        region: 'IN', domain: 'IN', displayMode: 'regions', resolution: 'provinces',
+        backgroundColor: 'transparent', datalessRegionColor: '#1e1e1e', defaultColor: '#333',
+        colorAxis: { colors: ['#333', '#4facfe'], minValue: 0, maxValue: 1 },
+        legend: 'none', keepAspectRatio: true,
         tooltip: {textStyle: {color: '#ffffff'}, showColorCode: false}
       };
 
       geoChart = new google.visualization.GeoChart(document.getElementById('india-map'));
 
-      // Event Listener for Clicks
       google.visualization.events.addListener(geoChart, 'regionClick', function(eventData) {
         let rowIndex = -1;
         for (let i = 0; i < geoData.getNumberOfRows(); i++) {
-          if (geoData.getValue(i, 0) === eventData.region) {
-            rowIndex = i;
-            break;
-          }
+          if (geoData.getValue(i, 0) === eventData.region) { rowIndex = i; break; }
         }
-
         if (rowIndex !== -1) {
-          // Reset all rows to 0 (unselected)
-          for (let i = 0; i < geoData.getNumberOfRows(); i++) {
-            geoData.setValue(i, 1, 0);
-          }
-          // Set the clicked state to 1 (selected)
+          for (let i = 0; i < geoData.getNumberOfRows(); i++) geoData.setValue(i, 1, 0);
           geoData.setValue(rowIndex, 1, 1);
           selectedStateName = geoData.getValue(rowIndex, 2);
-          
-          document.getElementById('selected-state-display').innerText = "Selected: " + selectedStateName;
-          
-          // Redraw map to show color update
+          document.getElementById('selected-state-display').innerText = selectedStateName;
           geoChart.draw(geoData, geoOptions);
         }
       });
-
-      // Initial draw
       geoChart.draw(geoData, geoOptions);
     }
     
-    // Redraw map if window resizes to keep it responsive
-    window.addEventListener('resize', () => {
-        if(geoChart && geoData && geoOptions) {
-            geoChart.draw(geoData, geoOptions);
-        }
-    });
-
+    window.addEventListener('resize', () => { if(geoChart) geoChart.draw(geoData, geoOptions); });
 
     // ----------------------------------------------------
     // SURVEY LOGIC
@@ -553,196 +405,99 @@
         "I think pledging to follow the morals of academic integrity, like the Hippocratic Oath, during orientation will have a positive impact on the academic culture."
     ];
 
-    let currentRole = "";
-    let activeQuestions = [];
-    let currentPage = 0;
-    const questionsPerPage = 5;
-    const totalQuestions = 20;
-    const totalPages = totalQuestions / questionsPerPage; 
-    let userResponses = {};
+    let currentRole = ""; let activeQuestions = []; let currentPage = 0; const questionsPerPage = 5; const totalQuestions = 20; let userResponses = {};
 
     document.querySelectorAll('.role-box').forEach(box => {
         box.addEventListener('click', function() {
             document.querySelectorAll('.role-box').forEach(b => b.classList.remove('selected'));
-            this.classList.add('selected');
-            currentRole = this.getAttribute('data-value');
+            this.classList.add('selected'); currentRole = this.getAttribute('data-value');
         });
     });
 
     function switchSection(sectionId) {
         document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
-        
-        const warning = document.getElementById('header-warning');
-        const vProgressBar = document.getElementById('v-progress-container');
-        
-        if (sectionId === 'questions-section') {
-            warning.style.display = 'block';
-            vProgressBar.style.display = 'flex'; 
-        } else {
-            warning.style.display = 'none';
-            vProgressBar.style.display = 'none'; 
-        }
+        document.getElementById('header-warning').style.display = sectionId === 'questions-section' ? 'block' : 'none';
+        document.getElementById('v-progress-container').style.display = sectionId === 'questions-section' ? 'flex' : 'none'; 
     }
 
     function startSurvey() {
         const userAge = document.getElementById('user-age').value;
+        const userGender = document.getElementById('user-gender').value;
         
         if (!userAge) { alert("Please enter your age."); return; }
+        if (!userGender) { alert("Please select your gender."); return; }
         if (!selectedStateName) { alert("Please select your state on the map."); return; }
         if (!currentRole) { alert("Please select your role."); return; }
         
-        userResponses = { 
-            role: currentRole,
-            age: userAge,
-            state: selectedStateName
-        };
+        userResponses = { role: currentRole, age: userAge, gender: userGender, state: selectedStateName };
+        activeQuestions = currentRole.includes("Faculty") ? facultyQuestions : studentQuestions;
         
-        if (currentRole.includes("Faculty")) {
-            activeQuestions = facultyQuestions;
-        } else {
-            activeQuestions = studentQuestions;
-        }
-        
-        currentPage = 0;
-        updateProgress();
-        renderQuestions();
-        switchSection('questions-section');
+        currentPage = 0; updateProgress(); renderQuestions(); switchSection('questions-section');
     }
 
     function renderQuestions() {
-        const container = document.getElementById('questions-container');
-        container.innerHTML = "";
-        
+        const container = document.getElementById('questions-container'); container.innerHTML = "";
         const startIdx = currentPage * questionsPerPage;
-        const endIdx = startIdx + questionsPerPage;
-        const currentBatch = activeQuestions.slice(startIdx, endIdx);
+        const currentBatch = activeQuestions.slice(startIdx, startIdx + questionsPerPage);
 
         currentBatch.forEach((qText, index) => {
-            const globalQIndex = startIdx + index;
-            const qId = "q" + globalQIndex;
-            
+            const globalQIndex = startIdx + index; const qId = "q" + globalQIndex;
             const card = document.createElement('div');
-            card.className = `question-card ${userResponses[qId] ? 'answered' : ''}`;
-            card.id = `card-${qId}`;
+            card.className = `question-card ${userResponses[qId] ? 'answered' : ''}`; card.id = `card-${qId}`;
             
-            const html = `
+            card.innerHTML = `
                 <div class="question-text"><strong>Q${globalQIndex + 1}.</strong> ${qText}</div>
                 <div class="options-group">
-                    <div class="radio-btn">
-                        <input type="radio" id="${qId}_yes" name="${qId}" value="Yes" onchange="saveResponse(event, '${qId}', 'Yes')" ${userResponses[qId] === 'Yes' ? 'checked' : ''}>
-                        <label for="${qId}_yes">Yes</label>
-                    </div>
-                    <div class="radio-btn">
-                        <input type="radio" id="${qId}_no" name="${qId}" value="No" onchange="saveResponse(event, '${qId}', 'No')" ${userResponses[qId] === 'No' ? 'checked' : ''}>
-                        <label for="${qId}_no">No</label>
-                    </div>
-                    <div class="radio-btn">
-                        <input type="radio" id="${qId}_maybe" name="${qId}" value="Maybe" onchange="saveResponse(event, '${qId}', 'Maybe')" ${userResponses[qId] === 'Maybe' ? 'checked' : ''}>
-                        <label for="${qId}_maybe">Maybe</label>
-                    </div>
+                    <div class="radio-btn"><input type="radio" id="${qId}_yes" name="${qId}" value="Yes" onchange="saveResponse(event, '${qId}', 'Yes')" ${userResponses[qId] === 'Yes' ? 'checked' : ''}><label for="${qId}_yes">Yes</label></div>
+                    <div class="radio-btn"><input type="radio" id="${qId}_no" name="${qId}" value="No" onchange="saveResponse(event, '${qId}', 'No')" ${userResponses[qId] === 'No' ? 'checked' : ''}><label for="${qId}_no">No</label></div>
+                    <div class="radio-btn"><input type="radio" id="${qId}_maybe" name="${qId}" value="Maybe" onchange="saveResponse(event, '${qId}', 'Maybe')" ${userResponses[qId] === 'Maybe' ? 'checked' : ''}><label for="${qId}_maybe">Maybe</label></div>
                 </div>
             `;
-            card.innerHTML = html;
             container.appendChild(card);
         });
-
         document.getElementById('btn-prev').style.visibility = (currentPage === 0) ? 'hidden' : 'visible';
     }
 
     function saveResponse(event, qId, value) {
-        userResponses[qId] = value;
-        document.getElementById(`card-${qId}`).classList.add('answered');
-        updateProgress();
+        userResponses[qId] = value; document.getElementById(`card-${qId}`).classList.add('answered'); updateProgress();
 
-        const smiley = document.createElement('div');
-        smiley.className = 'floating-smiley';
-        smiley.innerText = '😊';
+        const smiley = document.createElement('div'); smiley.className = 'floating-smiley'; smiley.innerText = '😊';
+        const label = event.target.nextElementSibling; const rect = label.getBoundingClientRect();
         
-        const label = event.target.nextElementSibling;
-        const rect = label.getBoundingClientRect();
-        
-        smiley.style.left = (rect.left + window.scrollX + rect.width / 2 - 12) + 'px'; 
+        smiley.style.left = (rect.left + window.scrollX + rect.width / 2 - 10) + 'px'; 
         smiley.style.top = (rect.top + window.scrollY - 10) + 'px'; 
-        
         document.body.appendChild(smiley);
-        
-        setTimeout(() => {
-            smiley.remove();
-        }, 1000);
+        setTimeout(() => smiley.remove(), 1000);
     }
 
     function updateProgress() {
         let answeredCount = 0;
-        for (let i = 0; i < totalQuestions; i++) {
-            if (userResponses["q" + i]) {
-                answeredCount++;
-            }
-        }
-        
+        for (let i = 0; i < totalQuestions; i++) if (userResponses["q" + i]) answeredCount++;
         const percentage = Math.round((answeredCount / totalQuestions) * 100);
         document.getElementById('v-progress-bar').style.height = percentage + "%";
         document.getElementById('v-progress-text').innerText = percentage + "%";
     }
 
     function checkAllAnswered() {
-        const startIdx = currentPage * questionsPerPage;
-        for (let i = 0; i < questionsPerPage; i++) {
-            if (!userResponses["q" + (startIdx + i)]) {
-                return false;
-            }
-        }
+        for (let i = 0; i < questionsPerPage; i++) if (!userResponses["q" + (currentPage * questionsPerPage + i)]) return false;
         return true;
     }
 
     function nextPage() {
-        if (!checkAllAnswered()) {
-            alert("Please answer all questions on this page before proceeding.");
-            return;
-        }
-
-        if (currentPage < totalPages - 1) {
-            currentPage++;
-            renderQuestions();
-            window.scrollTo(0, 0);
-        } else {
-            switchSection('submit-section');
-            window.scrollTo(0, 0);
-        }
+        if (!checkAllAnswered()) { alert("Please answer all questions on this page."); return; }
+        if (currentPage < (totalQuestions / questionsPerPage) - 1) { currentPage++; renderQuestions(); window.scrollTo(0, 0); } 
+        else { switchSection('submit-section'); window.scrollTo(0, 0); }
     }
 
-    function prevPage() {
-        if (currentPage > 0) {
-            currentPage--;
-            renderQuestions();
-            window.scrollTo(0, 0);
-        }
-    }
+    function prevPage() { if (currentPage > 0) { currentPage--; renderQuestions(); window.scrollTo(0, 0); } }
 
     function submitData() {
-        const submitBtn = document.getElementById('submit-btn');
-        submitBtn.innerText = "Submitting...";
-        submitBtn.disabled = true;
-
-        fetch(GOOGLE_APP_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userResponses)
-        })
-        .then(() => {
-            switchSection('thanks-section');
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert("There was an error submitting your form. Please try again.");
-            submitBtn.innerText = "Submit Your Response";
-            submitBtn.disabled = false;
-        });
+        const btn = document.getElementById('submit-btn'); btn.innerText = "Submitting..."; btn.disabled = true;
+        fetch(GOOGLE_APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(userResponses) })
+        .then(() => switchSection('thanks-section'))
+        .catch(() => { alert("Error submitting. Please try again."); btn.innerText = "Submit Your Response"; btn.disabled = false; });
     }
 </script>
-
 </body>
 </html>
