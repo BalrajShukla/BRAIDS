@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BRAIDS Interactive Tool</title>
+    
+    <!-- JSVectorMap CSS (For the Interactive India Map) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap/dist/css/jsvectormap.min.css" />
+
     <style>
         :root {
             --bg-color: #121212;
@@ -38,6 +42,7 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
+            position: relative;
         }
 
         h1 {
@@ -79,35 +84,41 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Role Selection Boxes */
-        label.role-label {
+        /* Homepage Inputs */
+        .form-group {
+            margin-bottom: 25px;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        label.main-label {
             display: block;
             margin-bottom: 15px;
             font-size: 1.1em;
             font-weight: bold;
-            text-align: center;
+            color: var(--accent);
         }
 
         .role-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
         }
 
         .role-box {
-            background: #2a2a2a;
+            background: #1e1e1e;
             border: 2px solid #444;
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
-            font-size: 0.95em;
+            font-size: 0.85em; /* Made text slightly smaller */
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 70px;
+            min-height: 50px; /* Made tiles shorter */
             user-select: none;
         }
 
@@ -121,35 +132,72 @@
             background: rgba(79, 172, 254, 0.15);
             color: var(--accent);
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(79, 172, 254, 0.2);
         }
 
-        /* Progress Bar */
-        .progress-wrapper {
-            margin-bottom: 25px;
-        }
-
-        .progress-container {
+        input[type="number"] {
             width: 100%;
-            background-color: #333;
+            max-width: 200px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #1e1e1e;
+            color: white;
+            font-size: 1em;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--accent);
+        }
+
+        /* Interactive Map Container */
+        #india-map {
+            width: 100%;
+            height: 350px;
+            background-color: transparent;
+        }
+        .jvm-tooltip {
+            background-color: #000;
+            color: #fff;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-family: inherit;
+        }
+
+        /* Vertical Progress Bar */
+        .v-progress-container {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 60vh;
+            background-color: #2a2a2a;
             border-radius: 10px;
-            height: 12px;
-            overflow: hidden;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            justify-content: flex-end;
+            z-index: 100;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
-            width: 0%;
-            transition: width 0.4s ease;
+        .v-progress-bar {
+            width: 100%;
+            background: linear-gradient(0deg, var(--accent) 0%, var(--accent-hover) 100%);
+            height: 0%;
+            border-radius: 10px;
+            transition: height 0.4s ease;
         }
 
-        .progress-text {
-            text-align: right;
-            font-size: 0.85em;
-            color: var(--text-muted);
-            margin-top: 8px;
+        .v-progress-text {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
             font-weight: bold;
+            color: var(--accent);
+            white-space: nowrap;
         }
 
         /* Form Controls */
@@ -197,28 +245,30 @@
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
+            position: relative;
         }
 
-        /* Color Coded Responses */
         .radio-btn input[value="Yes"]:checked + label {
-            background: rgba(0, 230, 118, 0.15);
-            border-color: var(--success);
-            color: var(--success);
-            font-weight: bold;
+            background: rgba(0, 230, 118, 0.15); border-color: var(--success); color: var(--success); font-weight: bold;
         }
-
         .radio-btn input[value="No"]:checked + label {
-            background: rgba(255, 75, 75, 0.15);
-            border-color: var(--danger);
-            color: var(--danger);
-            font-weight: bold;
+            background: rgba(255, 75, 75, 0.15); border-color: var(--danger); color: var(--danger); font-weight: bold;
+        }
+        .radio-btn input[value="Maybe"]:checked + label {
+            background: rgba(255, 234, 0, 0.15); border-color: var(--warning); color: var(--warning); font-weight: bold;
         }
 
-        .radio-btn input[value="Maybe"]:checked + label {
-            background: rgba(255, 234, 0, 0.15);
-            border-color: var(--warning);
-            color: var(--warning);
-            font-weight: bold;
+        /* Floating Smiley Animation */
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+        }
+        .floating-smiley {
+            position: absolute;
+            font-size: 24px;
+            animation: floatUpFade 1s forwards ease-out;
+            pointer-events: none;
+            z-index: 1000;
         }
 
         .nav-buttons {
@@ -238,37 +288,13 @@
             transition: 0.3s;
         }
 
-        .nav-buttons button {
-            flex: 1;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
-            color: #000;
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #444;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #555;
-        }
-
-        .btn-submit {
-            width: 100%;
-            max-width: 250px; /* Decent size on desktop */
-            margin: 0 auto;
-            display: block;
-        }
-
-        .start-btn {
+        .nav-buttons button { flex: 1; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: #000; }
+        .btn-primary:hover { box-shadow: 0 0 15px rgba(79, 172, 254, 0.5); transform: translateY(-2px); }
+        .btn-secondary { background: #444; color: white; }
+        .btn-secondary:hover { background: #555; }
+        
+        .btn-submit, .start-btn {
             width: 100%;
             max-width: 250px;
             margin: 0 auto;
@@ -276,64 +302,68 @@
         }
 
         .disclaimer {
-            font-size: 0.9em;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 25px;
-            line-height: 1.6;
-            max-width: 600px;
+            font-size: 0.9em; color: var(--text-muted); text-align: center; margin-bottom: 25px; line-height: 1.6; max-width: 600px;
         }
-
-        .center-content {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            min-height: 300px;
-        }
-
-        .success-icon {
-            font-size: 4em;
-            color: var(--success);
-            margin-bottom: 20px;
-        }
+        .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; }
+        .success-icon { font-size: 4em; color: var(--success); margin-bottom: 20px; }
 
         /* Mobile Adjustments */
         @media (max-width: 600px) {
             body { padding: 10px; }
-            .container { padding: 20px 15px; }
+            .container { padding: 20px 15px; margin-right: 15px; width: calc(100% - 15px); }
             .nav-buttons { flex-direction: column-reverse; }
             .nav-buttons button { width: 100%; }
-            .btn-submit, .start-btn { max-width: 100%; } /* Full width on mobile for better tapping */
-            h1 { font-size: 1.7em; }
+            .btn-submit, .start-btn { max-width: 100%; }
+            .v-progress-container { right: 5px; width: 6px; height: 50vh; }
+            .v-progress-text { font-size: 0.7em; }
         }
     </style>
 </head>
 <body>
 
+<!-- Vertical Progress Bar (Outside container to stay fixed on screen) -->
+<div id="v-progress-container" class="v-progress-container">
+    <div class="v-progress-text" id="v-progress-text">0%</div>
+    <div class="v-progress-bar" id="v-progress-bar"></div>
+</div>
+
 <div class="container">
     <h1>BRAIDS</h1>
     <h3>Beliefs to Report Academic Integrity in Dentistry</h3>
 
-    <!-- Warning Header -->
     <div id="header-warning" class="header-warning" style="display: none;">
         <strong>Note:</strong> Academic Dishonesty/Misconduct or failing to maintain Academic Integrity in a Dental Institute includes cheating on examinations, plagiarizing assignments, disobeying professors by engaging in forbidden activities, forging or fabricating patient data, lying to faculty members to gain unfair advantage, lying to patients, and falsifying institutional documents (Turner SP, Beemsterboer PL. Enhancing academic integrity: formulating effective honor codes. J Dent Educ. 2003;67(10):1122-1129.).
     </div>
 
     <!-- HOME PAGE -->
     <div id="home-section" class="section active">
-        <label class="role-label">Select your current role:</label>
         
-        <div class="role-grid" id="role-grid">
-            <div class="role-box" data-value="Faculty (< 3 years)">Faculty (< 3 years of experience)</div>
-            <div class="role-box" data-value="Faculty (> 3 years)">Faculty (> 3 years of experience)</div>
-            <div class="role-box" data-value="Undergraduate (1st year)">Undergraduate Student (1st year)</div>
-            <div class="role-box" data-value="Undergraduate (2nd year)">Undergraduate Student (2nd year)</div>
-            <div class="role-box" data-value="Undergraduate (3rd year)">Undergraduate Student (3rd year)</div>
-            <div class="role-box" data-value="Undergraduate (4th year)">Undergraduate Student (4th year)</div>
-            <div class="role-box" data-value="Intern">Undergraduate Student (Intern)</div>
+        <!-- Age Input -->
+        <div class="form-group">
+            <label class="main-label" for="user-age">1. Please state your age:</label>
+            <input type="number" id="user-age" placeholder="e.g. 24" min="17" max="100">
+        </div>
+
+        <!-- Interactive Map -->
+        <div class="form-group">
+            <label class="main-label">2. Select the state where your institute is located:</label>
+            <p style="font-size: 0.85em; color: var(--text-muted); margin-top: -10px;">Tap/Click on the political map to select.</p>
+            <div id="india-map"></div>
+            <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin-top: 10px;">No state selected</p>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="form-group">
+            <label class="main-label">3. Select your current role:</label>
+            <div class="role-grid" id="role-grid">
+                <div class="role-box" data-value="Faculty (< 3 years)">Faculty (< 3 yrs)</div>
+                <div class="role-box" data-value="Faculty (> 3 years)">Faculty (> 3 yrs)</div>
+                <div class="role-box" data-value="Undergrad (1st year)">Undergrad (1st yr)</div>
+                <div class="role-box" data-value="Undergrad (2nd year)">Undergrad (2nd yr)</div>
+                <div class="role-box" data-value="Undergrad (3rd year)">Undergrad (3rd yr)</div>
+                <div class="role-box" data-value="Undergrad (4th year)">Undergrad (4th yr)</div>
+                <div class="role-box" data-value="Intern">Intern</div>
+            </div>
         </div>
 
         <button class="btn-primary start-btn" onclick="startSurvey()">Start Survey</button>
@@ -341,13 +371,6 @@
 
     <!-- QUESTIONS PAGE -->
     <div id="questions-section" class="section">
-        <div class="progress-wrapper">
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="progress-text" id="progress-text">0% Completed</div>
-        </div>
-
         <div id="questions-container"></div>
         <div class="nav-buttons">
             <button class="btn-secondary" id="btn-prev" onclick="prevPage()">Previous</button>
@@ -375,9 +398,40 @@
     </div>
 </div>
 
+<!-- Scripts for the Map -->
+<script src="https://cdn.jsdelivr.net/npm/jsvectormap"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/india.js"></script>
+
 <script>
     // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXGXGrsEfa8MRscq7COCtdqgaH7wTg835sCtEdoHFI7FB_uw87WpCw6wM1BcD8Pzq9/exec';
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnbD-DkqRDKWU8-LPd0pm5ykDx7gdyseuCKebQVKDmwlBpvxgmktedgRDPaDIP1o7W/exec';
+
+    // Map Initialization Variables
+    let selectedStateName = "";
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        const map = new jsVectorMap({
+            selector: '#india-map',
+            map: 'in_mill',
+            regionsSelectable: true,
+            regionsSelectableOne: true,
+            zoomOnScroll: false,
+            regionStyle: {
+                initial: { fill: '#333', stroke: '#555', strokeWidth: 0.5 },
+                selected: { fill: '#4facfe' },
+                hover: { fill: '#00f2fe' }
+            },
+            onRegionSelected: function(index, isSelected, selectedRegions) {
+                if (isSelected) {
+                    selectedStateName = map.getRegionName(index);
+                    document.getElementById('selected-state-display').innerText = "Selected: " + selectedStateName;
+                } else {
+                    selectedStateName = "";
+                    document.getElementById('selected-state-display').innerText = "No state selected";
+                }
+            }
+        });
+    });
 
     const facultyQuestions = [
         "Peers and senior faculty members influence my actions against academic misconduct.",
@@ -447,20 +501,29 @@
         document.getElementById(sectionId).classList.add('active');
         
         const warning = document.getElementById('header-warning');
+        const vProgressBar = document.getElementById('v-progress-container');
+        
         if (sectionId === 'questions-section') {
             warning.style.display = 'block';
+            vProgressBar.style.display = 'flex'; // Show vertical bar
         } else {
             warning.style.display = 'none';
+            vProgressBar.style.display = 'none'; // Hide vertical bar
         }
     }
 
     function startSurvey() {
-        if (!currentRole) {
-            alert("Please select your role from the boxes above to begin.");
-            return;
-        }
+        const userAge = document.getElementById('user-age').value;
         
-        userResponses = { role: currentRole };
+        if (!userAge) { alert("Please enter your age."); return; }
+        if (!selectedStateName) { alert("Please select your state on the map."); return; }
+        if (!currentRole) { alert("Please select your role."); return; }
+        
+        userResponses = { 
+            role: currentRole,
+            age: userAge,
+            state: selectedStateName
+        };
         
         if (currentRole.includes("Faculty")) {
             activeQuestions = facultyQuestions;
@@ -494,15 +557,15 @@
                 <div class="question-text"><strong>Q${globalQIndex + 1}.</strong> ${qText}</div>
                 <div class="options-group">
                     <div class="radio-btn">
-                        <input type="radio" id="${qId}_yes" name="${qId}" value="Yes" onchange="saveResponse('${qId}', 'Yes')" ${userResponses[qId] === 'Yes' ? 'checked' : ''}>
+                        <input type="radio" id="${qId}_yes" name="${qId}" value="Yes" onchange="saveResponse(event, '${qId}', 'Yes')" ${userResponses[qId] === 'Yes' ? 'checked' : ''}>
                         <label for="${qId}_yes">Yes</label>
                     </div>
                     <div class="radio-btn">
-                        <input type="radio" id="${qId}_no" name="${qId}" value="No" onchange="saveResponse('${qId}', 'No')" ${userResponses[qId] === 'No' ? 'checked' : ''}>
+                        <input type="radio" id="${qId}_no" name="${qId}" value="No" onchange="saveResponse(event, '${qId}', 'No')" ${userResponses[qId] === 'No' ? 'checked' : ''}>
                         <label for="${qId}_no">No</label>
                     </div>
                     <div class="radio-btn">
-                        <input type="radio" id="${qId}_maybe" name="${qId}" value="Maybe" onchange="saveResponse('${qId}', 'Maybe')" ${userResponses[qId] === 'Maybe' ? 'checked' : ''}>
+                        <input type="radio" id="${qId}_maybe" name="${qId}" value="Maybe" onchange="saveResponse(event, '${qId}', 'Maybe')" ${userResponses[qId] === 'Maybe' ? 'checked' : ''}>
                         <label for="${qId}_maybe">Maybe</label>
                     </div>
                 </div>
@@ -514,10 +577,29 @@
         document.getElementById('btn-prev').style.visibility = (currentPage === 0) ? 'hidden' : 'visible';
     }
 
-    function saveResponse(qId, value) {
+    function saveResponse(event, qId, value) {
         userResponses[qId] = value;
         document.getElementById(`card-${qId}`).classList.add('answered');
         updateProgress();
+
+        // The Floating Smiley Logic
+        const smiley = document.createElement('div');
+        smiley.className = 'floating-smiley';
+        smiley.innerText = '😊';
+        
+        // Find the label element that was actually clicked (next to the hidden radio input)
+        const label = event.target.nextElementSibling;
+        const rect = label.getBoundingClientRect();
+        
+        smiley.style.left = (rect.left + window.scrollX + rect.width / 2 - 12) + 'px'; // Center horizontally
+        smiley.style.top = (rect.top + window.scrollY - 10) + 'px'; // Start slightly above button
+        
+        document.body.appendChild(smiley);
+        
+        // Clean up the smiley from the DOM after animation finishes
+        setTimeout(() => {
+            smiley.remove();
+        }, 1000);
     }
 
     function updateProgress() {
@@ -529,8 +611,8 @@
         }
         
         const percentage = Math.round((answeredCount / totalQuestions) * 100);
-        document.getElementById('progress-bar').style.width = percentage + "%";
-        document.getElementById('progress-text').innerText = percentage + "% Completed";
+        document.getElementById('v-progress-bar').style.height = percentage + "%";
+        document.getElementById('v-progress-text').innerText = percentage + "%";
     }
 
     function checkAllAnswered() {
