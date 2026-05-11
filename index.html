@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BRAIDS Interactive Tool</title>
     <style>
         :root {
@@ -37,12 +37,14 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
         }
 
         h1 {
             text-align: center;
             color: var(--accent);
             margin-bottom: 5px;
+            font-size: 2em;
         }
 
         h3 {
@@ -50,6 +52,7 @@
             font-weight: 400;
             color: var(--text-muted);
             margin-bottom: 30px;
+            font-size: 1.1em;
         }
 
         .header-warning {
@@ -87,8 +90,8 @@
 
         .role-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
             margin-bottom: 30px;
         }
 
@@ -96,14 +99,15 @@
             background: #2a2a2a;
             border: 2px solid #444;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
+            font-size: 0.95em;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 60px;
+            min-height: 70px;
             user-select: none;
         }
 
@@ -232,6 +236,9 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
+        }
+
+        .nav-buttons button {
             flex: 1;
         }
 
@@ -254,12 +261,27 @@
             background: #555;
         }
 
+        .btn-submit {
+            width: 100%;
+            max-width: 250px; /* Decent size on desktop */
+            margin: 0 auto;
+            display: block;
+        }
+
+        .start-btn {
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto;
+            display: block;
+        }
+
         .disclaimer {
             font-size: 0.9em;
             color: var(--text-muted);
             text-align: center;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            max-width: 600px;
         }
 
         .center-content {
@@ -280,9 +302,12 @@
 
         /* Mobile Adjustments */
         @media (max-width: 600px) {
-            .container { padding: 20px; }
+            body { padding: 10px; }
+            .container { padding: 20px 15px; }
             .nav-buttons { flex-direction: column-reverse; }
-            button { width: 100%; }
+            .nav-buttons button { width: 100%; }
+            .btn-submit, .start-btn { max-width: 100%; } /* Full width on mobile for better tapping */
+            h1 { font-size: 1.7em; }
         }
     </style>
 </head>
@@ -292,7 +317,7 @@
     <h1>BRAIDS</h1>
     <h3>Beliefs to Report Academic Integrity in Dentistry</h3>
 
-    <!-- Warning Header (Hidden on Home, Submit, and Thanks pages) -->
+    <!-- Warning Header -->
     <div id="header-warning" class="header-warning" style="display: none;">
         <strong>Note:</strong> Academic Dishonesty/Misconduct or failing to maintain Academic Integrity in a Dental Institute includes cheating on examinations, plagiarizing assignments, disobeying professors by engaging in forbidden activities, forging or fabricating patient data, lying to faculty members to gain unfair advantage, lying to patients, and falsifying institutional documents (Turner SP, Beemsterboer PL. Enhancing academic integrity: formulating effective honor codes. J Dent Educ. 2003;67(10):1122-1129.).
     </div>
@@ -311,7 +336,7 @@
             <div class="role-box" data-value="Intern">Undergraduate Student (Intern)</div>
         </div>
 
-        <button class="btn-primary" onclick="startSurvey()">Start Survey</button>
+        <button class="btn-primary start-btn" onclick="startSurvey()">Start Survey</button>
     </div>
 
     <!-- QUESTIONS PAGE -->
@@ -334,9 +359,9 @@
     <div id="submit-section" class="section">
         <div class="center-content">
             <p class="disclaimer">
-                <strong>Disclaimer:</strong> By clicking the button below, I consent to my responses being used for further research and analysis, with a guarantee of maintaining the participant's identity in confidence.
+                <strong>Disclaimer:</strong> By clicking the button below, you confirm that your responses can be considered for further research with an assurity that your identity remains confidential.
             </p>
-            <button class="btn-primary" style="width: 100%; max-width: 300px;" onclick="submitData()" id="submit-btn">Submit Your Response</button>
+            <button class="btn-primary btn-submit" onclick="submitData()" id="submit-btn">Submit Your Response</button>
         </div>
     </div>
 
