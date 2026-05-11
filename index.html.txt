@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRAIDS Interactive Tool</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --accent: #4facfe;
+            --accent-hover: #00f2fe;
+            --danger: #ff4b4b;
+            --success: #00e676;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        h3 {
+            text-align: center;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .header-warning {
+            background-color: rgba(255, 75, 75, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            font-size: 0.9em;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            border-radius: 4px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Controls */
+        label.role-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #444;
+            font-size: 1em;
+            margin-bottom: 30px;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        .question-card {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .options-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .radio-btn {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .radio-btn input[type="radio"] {
+            display: none;
+        }
+
+        .radio-btn label {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: #333;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .radio-btn input[type="radio"]:checked + label {
+            background: rgba(79, 172, 254, 0.2);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #444;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        .disclaimer {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .center-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 300px;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .nav-buttons { flex-direction: column-reverse; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>BRAIDS</h1>
+    <h3>Beliefs to Report Academic Integrity in Dentistry</h3>
+
+    <!-- Warning Header (Hidden on Home, Submit, and Thanks pages) -->
+    <div id="header-warning" class="header-warning" style="display: none;">
+        <strong>Note:</strong> Academic Dishonesty/Misconduct or failing to maintain Academic Integrity in a Dental Institute includes cheating on examinations, plagiarizing assignments, disobeying professors by engaging in forbidden activities, forging or fabricating patient data, lying to faculty members to gain unfair advantage, lying to patients, and falsifying institutional documents (Turner SP, Beemsterboer PL. Enhancing academic integrity: formulating effective honor codes. J Dent Educ. 2003;67(10):1122-1129.).
+    </div>
+
+    <!-- HOME PAGE -->
+    <div id="home-section" class="section active">
+        <label class="role-label" for="role-select">Select your current role:</label>
+        <select id="role-select">
+            <option value="" disabled selected>-- Choose an option --</option>
+            <option value="Faculty (< 3 years)">Faculty (< 3 years of experience)</option>
+            <option value="Faculty (> 3 years)">Faculty (> 3 years of experience)</option>
+            <option value="Undergraduate (1st year)">Undergraduate Student (1st year)</option>
+            <option value="Undergraduate (2nd year)">Undergraduate Student (2nd year)</option>
+            <option value="Undergraduate (3rd year)">Undergraduate Student (3rd year)</option>
+            <option value="Undergraduate (4th year)">Undergraduate Student (4th year)</option>
+            <option value="Intern">Undergraduate Student (Intern)</option>
+        </select>
+        <button class="btn-primary" onclick="startSurvey()">Start Survey</button>
+    </div>
+
+    <!-- QUESTIONS PAGE -->
+    <div id="questions-section" class="section">
+        <div id="questions-container"></div>
+        <div class="nav-buttons">
+            <button class="btn-secondary" id="btn-prev" onclick="prevPage()">Previous</button>
+            <button class="btn-primary" id="btn-next" onclick="nextPage()">Next</button>
+        </div>
+    </div>
+
+    <!-- SUBMIT PAGE -->
+    <div id="submit-section" class="section">
+        <div class="center-content">
+            <p class="disclaimer">
+                <strong>Disclaimer:</strong> By clicking the button below, I consent to my responses being used for further research and analysis, with a guarantee of maintaining the participant's identity in confidence.
+            </p>
+            <button class="btn-primary" style="width: 100%; max-width: 300px;" onclick="submitData()" id="submit-btn">Submit Your Response</button>
+        </div>
+    </div>
+
+    <!-- THANK YOU PAGE -->
+    <div id="thanks-section" class="section">
+        <div class="center-content">
+            <div class="success-icon">✓</div>
+            <h2>Thank you for your participation</h2>
+            <p style="color: var(--text-muted)">Your responses have been securely recorded.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    const GOOGLE_APP_SCRIPT_URL = 'YOUR_GOOGLE_WEB_APP_URL_HERE';
+
+    const facultyQuestions = [
+        "Peers and senior faculty members influence my actions against academic misconduct.",
+        "I wish to report academic dishonesty, but I am bound by institutional culture.",
+        "I do not wish to indulge in the reporting of academic misconduct, as I am afraid that it would make students repel me.",
+        "I do not wish to indulge in the reporting of academic misconduct, as it takes my valuable time because the process of resolution is tedious and long.",
+        "I have faced one or more instances in which I received no support from the institutional supervisors after reporting a case of academic misconduct.",
+        "I believe that training on academic integrity must be mandatory for both faculty and students.",
+        "I believe that failing to uphold academic integrity can compromise a student’s future professional career.",
+        "I choose not to report academic dishonesty, as I myself had previously engaged in dishonest activities as a student.",
+        "I believe the lack of fear of the consequences of academic dishonesty encourages students to engage in dishonesty even more.",
+        "The lack of academic integrity often makes me ponder my career choice.",
+        "I take it as a challenge to restore academic integrity to the best of my abilities when I feel a resolution must be reached.",
+        "I do not think that imposing a code of conduct at an institutional level will promote the maintenance of academic integrity.",
+        "I have witnessed individuals who take to academic integrity for personal gains without thinking of how immoral or legitimate a student’s action is.",
+        "I myself engage in or have witnessed fellow faculty members indulge in pleasing students more instead of imposing good ethics.",
+        "I believe immoral acts committed by the students are heavily curbed or silenced by the administrators or the top brass themselves.",
+        "As a faculty member, I myself am unaware of the ethical policies of the institute I serve, so much so that I doubt they exist.",
+        "I choose not to report a case of academic dishonesty because the faculty is never rewarded for doing the right thing.",
+        "I believe that the institute I serve believes in the status quo, whose administration would game the system to avoid unnecessary confrontations.",
+        "I think every student should be asked to sign a statement ahead of their admission to a professional course, which would state the repercussions and sanctions imposed for engaging in different levels of academic dishonesty.",
+        "I believe that students should be involved in the formal process of constituting an ethical code of conduct in academia."
+    ];
+
+    const studentQuestions = [
+        "I was informed and know about the importance of maintaining academic integrity while being enrolled in a professional course.",
+        "I have witnessed academic dishonesty or illegal behavior by my peers, but have chosen not to report it.",
+        "I myself have committed academic misconduct and have faced stringent repercussions for the same.",
+        "I myself have committed academic misconduct, but got away with it, and continue to manipulate the system per my understanding.",
+        "I see my seniors engage in academic dishonesty and get away with it, and realize that nothing actually happens if one gets caught engaging in fraudulent student activities.",
+        "I believe it should be fair for me to engage in academic misconduct if my seniors commit it and get away with it.",
+        "I am well aware of the various punishments and sanctions that I can face if I commit any academic misconduct.",
+        "I believe it is easy to rig a faculty member or the administration and escape after committing academic dishonesty.",
+        "I think resorting to any form of academic dishonesty by myself or my colleagues will lead to our compromising the well-being of our patients in the future.",
+        "I choose to be with peers and seniors who follow academic honesty, understand the morals of academia, and respect the conscious educational nature of the institute.",
+        "I believe it is logical to ban the use of social media in an academic setting.",
+        "I would expect my institute to provide some guidelines on what behavior is considered acceptable or unacceptable to maintain academic integrity.",
+        "I choose not to report academic dishonesty as it has greater social consequences, and would rather allow someone to impact the institutional culture negatively.",
+        "It is relatively easy to coerce a faculty member into a level of friendship that has helped me or several of my colleagues escape scenarios wherein they would otherwise face major reprimands/sanctions/punishments/repercussions.",
+        "I believe the lack of policies on the use or misuse of Artificial Intelligence in my institute promotes academic dishonesty.",
+        "I think academic dishonesty is very weakly monitored in my institute, with a lack of clear operational definitions on what constitutes moral student conduct.",
+        "There is a student committee or task force in my institute that ensures that academic misconduct is documented, monitored, and followed up on.",
+        "I engage in academic misconduct without thinking of the repercussions and believe that they add to creating memories of my term as a student in a formal education setting.",
+        "I do not engage in academic dishonesty because of the values instilled in me by my parents, my schooling, and the awareness of the role I play as an individual who is still undergoing training.",
+        "I think pledging to follow the morals of academic integrity, like the Hippocratic Oath, during orientation will have a positive impact on the academic culture."
+    ];
+
+    let currentRole = "";
+    let activeQuestions = [];
+    let currentPage = 0;
+    const questionsPerPage = 5;
+    const totalPages = 4; // 20 questions / 5 per page
+    let userResponses = {}; // Store answers here
+
+    function switchSection(sectionId) {
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        
+        // Show/Hide Header Warning
+        const warning = document.getElementById('header-warning');
+        if (sectionId === 'questions-section') {
+            warning.style.display = 'block';
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+
+    function startSurvey() {
+        const select = document.getElementById('role-select');
+        if (!select.value) {
+            alert("Please select your role to begin.");
+            return;
+        }
+        
+        currentRole = select.value;
+        userResponses = { role: currentRole };
+        
+        if (currentRole.includes("Faculty")) {
+            activeQuestions = facultyQuestions;
+        } else {
+            activeQuestions = studentQuestions;
+        }
+        
+        currentPage = 0;
+        renderQuestions();
+        switchSection('questions-section');
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = "";
+        
+        const startIdx = currentPage * questionsPerPage;
+        const endIdx = startIdx + questionsPerPage;
+        const currentBatch = activeQuestions.slice(startIdx, endIdx);
+
+        currentBatch.forEach((qText, index) => {
+            const globalQIndex = startIdx + index;
+            const qId = "q" + globalQIndex;
+            
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            
+            const html = `
+                <div class="question-text"><strong>Q${globalQIndex + 1}.</strong> ${qText}</div>
+                <div class="options-group">
+                    <div class="radio-btn">
+                        <input type="radio" id="${qId}_yes" name="${qId}" value="Yes" onchange="saveResponse('${qId}', 'Yes')" ${userResponses[qId] === 'Yes' ? 'checked' : ''}>
+                        <label for="${qId}_yes">Yes</label>
+                    </div>
+                    <div class="radio-btn">
+                        <input type="radio" id="${qId}_no" name="${qId}" value="No" onchange="saveResponse('${qId}', 'No')" ${userResponses[qId] === 'No' ? 'checked' : ''}>
+                        <label for="${qId}_no">No</label>
+                    </div>
+                    <div class="radio-btn">
+                        <input type="radio" id="${qId}_maybe" name="${qId}" value="Maybe" onchange="saveResponse('${qId}', 'Maybe')" ${userResponses[qId] === 'Maybe' ? 'checked' : ''}>
+                        <label for="${qId}_maybe">Maybe</label>
+                    </div>
+                </div>
+            `;
+            card.innerHTML = html;
+            container.appendChild(card);
+        });
+
+        // Update button states
+        document.getElementById('btn-prev').style.visibility = (currentPage === 0) ? 'hidden' : 'visible';
+    }
+
+    function saveResponse(qId, value) {
+        userResponses[qId] = value;
+    }
+
+    function checkAllAnswered() {
+        const startIdx = currentPage * questionsPerPage;
+        for (let i = 0; i < questionsPerPage; i++) {
+            if (!userResponses["q" + (startIdx + i)]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function nextPage() {
+        if (!checkAllAnswered()) {
+            alert("Please answer all questions on this page before proceeding.");
+            return;
+        }
+
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            renderQuestions();
+            window.scrollTo(0, 0);
+        } else {
+            // Reached the end, go to submit screen
+            switchSection('submit-section');
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            renderQuestions();
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function submitData() {
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.innerText = "Submitting...";
+        submitBtn.disabled = true;
+
+        fetch(GOOGLE_APP_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Bypasses CORS issues when sending data
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userResponses)
+        })
+        .then(() => {
+            switchSection('thanks-section');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert("There was an error submitting your form. Please try again.");
+            submitBtn.innerText = "Submit Your Response";
+            submitBtn.disabled = false;
+        });
+    }
+</script>
+
+</body>
+</html>
