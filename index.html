@@ -31,7 +31,38 @@
             min-height: 100vh;
         }
 
-        /* Tighter Container for minimal scrolling */
+        /* Top Sticky Progress Bar */
+        .top-progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background-color: #2a2a2a;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .top-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .top-progress-text {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: var(--accent);
+            background: rgba(0,0,0,0.6);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
         .container {
             max-width: 800px;
             width: 100%;
@@ -43,6 +74,7 @@
             flex-direction: column;
             box-sizing: border-box;
             position: relative;
+            margin-top: 20px; /* Space for progress bar */
         }
 
         h1 { text-align: center; color: var(--accent); margin: 0 0 5px 0; font-size: 1.8em; }
@@ -57,7 +89,6 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* COMPACT HOMEPAGE STYLING */
         .form-group {
             margin-bottom: 15px;
             background: #2a2a2a;
@@ -67,7 +98,7 @@
 
         label.main-label { display: block; margin-bottom: 8px; font-size: 1em; font-weight: bold; color: var(--accent); }
 
-        /* Row 1: Age and Gender Inline */
+        /* Age & Gender Side by Side */
         .inline-row {
             display: flex;
             gap: 15px;
@@ -88,39 +119,40 @@
         }
         input[type="number"]:focus, select:focus { border-color: var(--accent); }
 
-        /* Row 2: Zoomable Map */
+        /* Map Window - Pannable */
         .map-window {
             position: relative;
             width: 100%;
-            height: 220px; /* Shorter height to prevent scrolling */
+            height: 250px; 
             background: #1e1e1e;
             border: 1px solid #444;
             border-radius: 6px;
-            overflow: hidden;
+            overflow: auto; /* Allows panning */
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
         }
         
-        #map-scalable-container {
-            width: 100%;
-            height: 100%;
-            transform-origin: center center;
-            transition: transform 0.2s ease;
+        #india-map { 
+            width: 100%; 
+            height: 100%; 
+            /* Min dimensions ensure it can be scrolled when zoomed */
+            min-height: 100%;
+            min-width: 100%;
         }
-
-        #india-map { width: 100%; height: 100%; }
 
         .zoom-controls {
             position: absolute;
             top: 10px; right: 10px;
             display: flex; flex-direction: column; gap: 5px;
+            z-index: 10;
         }
         .zoom-btn {
-            background: rgba(0,0,0,0.7); color: white; border: 1px solid #555; border-radius: 4px;
-            width: 30px; height: 30px; font-size: 18px; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.8); color: white; border: 1px solid #555; border-radius: 4px;
+            width: 35px; height: 35px; font-size: 20px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; user-select: none;
         }
         .zoom-btn:hover { background: var(--accent); border-color: var(--accent); }
 
-        /* Row 3: Role Grid - Readable but compact */
+        /* Role Selection */
         .role-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -133,14 +165,6 @@
         }
         .role-box:hover { border-color: var(--text-muted); background: #333; }
         .role-box.selected { border-color: var(--accent); background: rgba(79, 172, 254, 0.15); color: var(--accent); font-weight: bold; }
-
-        /* Vertical Progress Bar */
-        .v-progress-container {
-            position: fixed; right: 10px; top: 50%; transform: translateY(-50%); width: 8px; height: 50vh;
-            background-color: #2a2a2a; border-radius: 10px; display: none; flex-direction: column; justify-content: flex-end; z-index: 100;
-        }
-        .v-progress-bar { width: 100%; background: linear-gradient(0deg, var(--accent) 0%, var(--accent-hover) 100%); height: 0%; border-radius: 10px; transition: height 0.4s ease; }
-        .v-progress-text { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.75em; font-weight: bold; color: var(--accent); }
 
         /* Question Cards */
         .question-card { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid transparent; }
@@ -157,11 +181,9 @@
         .radio-btn input[value="No"]:checked + label { background: rgba(255, 75, 75, 0.15); border-color: var(--danger); color: var(--danger); font-weight: bold; }
         .radio-btn input[value="Maybe"]:checked + label { background: rgba(255, 234, 0, 0.15); border-color: var(--warning); color: var(--warning); font-weight: bold; }
 
-        /* Floating Smiley */
         @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-30px) scale(1.5); } }
         .floating-smiley { position: absolute; font-size: 20px; animation: floatUpFade 1s forwards ease-out; pointer-events: none; z-index: 1000; }
 
-        /* Buttons */
         .nav-buttons { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
         button { padding: 12px 20px; border: none; border-radius: 6px; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.3s; flex: 1; }
         .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: #000; }
@@ -174,19 +196,19 @@
 
         @media (max-width: 600px) {
             .container { padding: 15px; margin-right: 15px; width: calc(100% - 15px); }
-            .inline-row { flex-direction: column; gap: 10px; }
-            .map-window { height: 180px; }
+            /* Notice: .inline-row remains flex (side-by-side) on mobile! */
+            .map-window { height: 220px; }
             .role-grid { grid-template-columns: repeat(2, 1fr); }
             .role-box { font-size: 0.85em; padding: 8px; }
-            .v-progress-container { right: 2px; width: 6px; height: 40vh; }
         }
     </style>
 </head>
 <body>
 
-<div id="v-progress-container" class="v-progress-container">
-    <div class="v-progress-text" id="v-progress-text">0%</div>
-    <div class="v-progress-bar" id="v-progress-bar"></div>
+<!-- High Visibility Top Progress Bar -->
+<div id="top-progress-container" class="top-progress-container">
+    <div class="top-progress-bar" id="top-progress-bar"></div>
+    <div class="top-progress-text" id="top-progress-text">0%</div>
 </div>
 
 <div class="container">
@@ -200,16 +222,16 @@
     <!-- HOME PAGE -->
     <div id="home-section" class="section active">
         
-        <!-- Age & Gender (Same Line) -->
+        <!-- Age & Gender (Forced Side by Side) -->
         <div class="form-group inline-row">
             <div>
                 <label class="main-label" for="user-age">1. Age:</label>
-                <input type="number" id="user-age" placeholder="Enter age" min="17" max="100">
+                <input type="number" id="user-age" placeholder="Age" min="17" max="100">
             </div>
             <div>
                 <label class="main-label" for="user-gender">2. Gender:</label>
                 <select id="user-gender">
-                    <option value="" disabled selected>Select Gender</option>
+                    <option value="" disabled selected>Select</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Prefer not to say">Prefer not to say</option>
@@ -218,19 +240,21 @@
             </div>
         </div>
 
-        <!-- Zoomable Map -->
+        <!-- Zoomable & Pannable Map -->
         <div class="form-group">
-            <label class="main-label">3. Select State of Institute:</label>
-            <div class="map-window">
-                <div id="map-scalable-container">
+            <label class="main-label">3. Tap on the state where your institute is located:</label>
+            <div style="position: relative;">
+                <div class="map-window" id="map-window">
                     <div id="india-map"></div>
                 </div>
+                <!-- Custom Zoom Controls placed over the wrapper -->
                 <div class="zoom-controls">
-                    <div class="zoom-btn" onclick="zoomMap(0.2)">+</div>
-                    <div class="zoom-btn" onclick="zoomMap(-0.2)">−</div>
+                    <div class="zoom-btn" onclick="zoomMap(50)">+</div>
+                    <div class="zoom-btn" onclick="zoomMap(-50)">−</div>
                 </div>
             </div>
             <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin: 10px 0 0 0; font-size: 0.9em;">No state selected</p>
+            <p style="text-align: center; font-size: 0.75em; color: var(--text-muted); margin-top: 5px;">(Use + to zoom in and drag to pan)</p>
         </div>
 
         <!-- Role Selection -->
@@ -284,14 +308,22 @@
     const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLnWlqWIpbBqEknPQwUz-MM7Rv4c9rIIwuPdF9O1nxPKpS6Ed7eQkbU4ETklqaAiM/exec';
 
     // ----------------------------------------------------
-    // MAP ZOOM LOGIC
+    // MAP ZOOM & PAN LOGIC
     // ----------------------------------------------------
-    let currentZoom = 1;
+    let currentMapWidth = 100; // Start at 100%
     function zoomMap(delta) {
-        currentZoom += delta;
-        if (currentZoom < 1) currentZoom = 1;
-        if (currentZoom > 3) currentZoom = 3;
-        document.getElementById('map-scalable-container').style.transform = `scale(${currentZoom})`;
+        currentMapWidth += delta;
+        if (currentMapWidth < 100) currentMapWidth = 100;
+        if (currentMapWidth > 300) currentMapWidth = 300; // Max zoom 300%
+        
+        const mapElement = document.getElementById('india-map');
+        mapElement.style.width = currentMapWidth + '%';
+        mapElement.style.height = currentMapWidth + '%';
+
+        // Redraw chart to fit the new internal dimensions, enabling scrolling
+        if(geoChart && geoData && geoOptions) {
+            geoChart.draw(geoData, geoOptions);
+        }
     }
 
     // ----------------------------------------------------
@@ -333,7 +365,8 @@
         backgroundColor: 'transparent', datalessRegionColor: '#1e1e1e', defaultColor: '#333',
         colorAxis: { colors: ['#333', '#4facfe'], minValue: 0, maxValue: 1 },
         legend: 'none', keepAspectRatio: true,
-        tooltip: {textStyle: {color: '#ffffff'}, showColorCode: false}
+        // CRITICAL FIX FOR iOS: trigger 'none' disables the hover state blocking clicks.
+        tooltip: { trigger: 'none' } 
       };
 
       geoChart = new google.visualization.GeoChart(document.getElementById('india-map'));
@@ -354,8 +387,6 @@
       geoChart.draw(geoData, geoOptions);
     }
     
-    window.addEventListener('resize', () => { if(geoChart) geoChart.draw(geoData, geoOptions); });
-
     // ----------------------------------------------------
     // SURVEY LOGIC
     // ----------------------------------------------------
@@ -418,7 +449,7 @@
         document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
         document.getElementById('header-warning').style.display = sectionId === 'questions-section' ? 'block' : 'none';
-        document.getElementById('v-progress-container').style.display = sectionId === 'questions-section' ? 'flex' : 'none'; 
+        document.getElementById('top-progress-container').style.display = sectionId === 'questions-section' ? 'block' : 'none'; 
     }
 
     function startSurvey() {
@@ -427,7 +458,7 @@
         
         if (!userAge) { alert("Please enter your age."); return; }
         if (!userGender) { alert("Please select your gender."); return; }
-        if (!selectedStateName) { alert("Please select your state on the map."); return; }
+        if (!selectedStateName) { alert("Please tap to select your state on the map."); return; }
         if (!currentRole) { alert("Please select your role."); return; }
         
         userResponses = { role: currentRole, age: userAge, gender: userGender, state: selectedStateName };
@@ -475,8 +506,8 @@
         let answeredCount = 0;
         for (let i = 0; i < totalQuestions; i++) if (userResponses["q" + i]) answeredCount++;
         const percentage = Math.round((answeredCount / totalQuestions) * 100);
-        document.getElementById('v-progress-bar').style.height = percentage + "%";
-        document.getElementById('v-progress-text').innerText = percentage + "%";
+        document.getElementById('top-progress-bar').style.width = percentage + "%";
+        document.getElementById('top-progress-text').innerText = percentage + "%";
     }
 
     function checkAllAnswered() {
