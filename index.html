@@ -18,71 +18,55 @@
             --danger: #ff4b4b;
             --success: #00e676;
             --warning: #ffea00;
+            --male-color: #4facfe;
+            --female-color: #ff61a6;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
+            /* Initial glowing gradient in the top right corner */
+            background-image: radial-gradient(circle at top right, rgba(79, 172, 254, 0.15), #121212 60%);
             color: var(--text-main);
             margin: 0;
             padding: 10px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            transition: background-image 1s ease; /* Smooth transition when colors change */
         }
 
         /* Top Sticky Progress Bar */
         .top-progress-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 8px;
-            background-color: #2a2a2a;
-            z-index: 2000;
-            display: none;
+            position: fixed; top: 0; left: 0; right: 0; height: 6px;
+            background-color: #2a2a2a; z-index: 2000; display: none;
             box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .top-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
-            width: 0%;
-            transition: width 0.4s ease;
+            height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+            width: 0%; transition: width 0.4s ease;
         }
 
         .top-progress-text {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 0.9em;
-            font-weight: bold;
-            color: var(--accent);
-            background: rgba(0,0,0,0.6);
-            padding: 4px 8px;
-            border-radius: 4px;
+            position: absolute; top: 10px; right: 10px; font-size: 0.8em;
+            font-weight: bold; color: var(--accent); background: rgba(0,0,0,0.6);
+            padding: 4px 8px; border-radius: 4px;
         }
 
         .container {
-            max-width: 800px;
-            width: 100%;
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-            position: relative;
-            margin-top: 20px; /* Space for progress bar */
+            max-width: 800px; width: 100%; background: var(--card-bg);
+            border-radius: 12px; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; box-sizing: border-box;
+            position: relative; margin-top: 15px; border: 1px solid rgba(255,255,255,0.05);
         }
 
-        h1 { text-align: center; color: var(--accent); margin: 0 0 5px 0; font-size: 1.8em; }
-        h3 { text-align: center; font-weight: 400; color: var(--text-muted); margin: 0 0 20px 0; font-size: 1em; }
+        h1 { text-align: center; color: var(--accent); margin: 0 0 5px 0; font-size: 1.8em; letter-spacing: 1px; }
+        h3 { text-align: center; font-weight: 400; color: var(--text-muted); margin: 0 0 20px 0; font-size: 0.95em; }
 
         .header-warning {
             background-color: rgba(255, 75, 75, 0.1); border-left: 4px solid var(--danger);
-            padding: 10px; font-size: 0.85em; margin-bottom: 15px; border-radius: 4px;
+            padding: 10px; font-size: 0.8em; margin-bottom: 15px; border-radius: 4px; line-height: 1.4;
         }
 
         .section { display: none; animation: fadeIn 0.3s ease; }
@@ -90,92 +74,98 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .form-group {
-            margin-bottom: 15px;
-            background: #2a2a2a;
-            padding: 15px;
-            border-radius: 8px;
+            margin-bottom: 15px; background: rgba(42, 42, 42, 0.6);
+            padding: 15px; border-radius: 8px;
         }
 
-        label.main-label { display: block; margin-bottom: 8px; font-size: 1em; font-weight: bold; color: var(--accent); }
+        label.main-label { display: block; margin-bottom: 8px; font-size: 0.95em; font-weight: bold; color: var(--accent); }
 
         /* Age & Gender Side by Side */
-        .inline-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .inline-row > div { flex: 1; }
+        .inline-row { display: flex; gap: 15px; align-items: center; }
+        .inline-row > div { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
-        input[type="number"], select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #1e1e1e;
-            color: white;
-            font-size: 0.95em;
-            outline: none;
-            box-sizing: border-box;
+        /* Playful Age Slider */
+        .slider-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .age-display-bubble {
+            font-size: 1.5em; font-weight: bold; color: var(--accent); margin-bottom: 5px;
+            transition: color 0.3s ease;
         }
-        input[type="number"]:focus, select:focus { border-color: var(--accent); }
+        input[type="range"] {
+            -webkit-appearance: none; width: 100%; background: transparent; height: 25px; outline: none; margin: 0;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; background: #444; border-radius: 3px; cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%;
+            background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
 
-        /* Map Window - Pannable */
+        /* Playful Gender Toggle */
+        .gender-toggle-wrapper {
+            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 100%;
+        }
+        .gender-label { font-size: 0.9em; font-weight: bold; color: #555; transition: 0.3s ease; }
+        .gender-label.active-male { color: var(--male-color); }
+        .gender-label.active-female { color: var(--female-color); }
+
+        .switch { position: relative; display: inline-block; width: 56px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--male-color); transition: .4s; border-radius: 28px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        input:checked + .slider { background-color: var(--female-color); }
+        input:checked + .slider:before { transform: translateX(28px); }
+
+        /* Map Window - Cleaned Up */
         .map-window {
-            position: relative;
-            width: 100%;
-            height: 250px; 
-            background: #1e1e1e;
-            border: 1px solid #444;
-            border-radius: 6px;
+            position: relative; width: 100%; height: 200px; 
+            background: #1e1e1e; border: 1px solid #444; border-radius: 6px;
             overflow: auto; /* Allows panning */
-            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+            -webkit-overflow-scrolling: touch; 
+            /* Hide scrollbars for a clean look */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
         }
+        .map-window::-webkit-scrollbar { display: none; /* Chrome, Safari */ }
         
         #india-map { 
-            width: 100%; 
-            height: 100%; 
-            /* Min dimensions ensure it can be scrolled when zoomed */
-            min-height: 100%;
-            min-width: 100%;
+            width: 150%; /* Force it to be larger than container so it pans naturally */
+            height: 150%; 
+            transform-origin: 0 0;
         }
 
-        .zoom-controls {
-            position: absolute;
-            top: 10px; right: 10px;
-            display: flex; flex-direction: column; gap: 5px;
-            z-index: 10;
-        }
-        .zoom-btn {
-            background: rgba(0,0,0,0.8); color: white; border: 1px solid #555; border-radius: 4px;
-            width: 35px; height: 35px; font-size: 20px; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; user-select: none;
-        }
-        .zoom-btn:hover { background: var(--accent); border-color: var(--accent); }
-
-        /* Role Selection */
+        /* Multiline Role Selection */
         .role-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 8px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px;
         }
         .role-box {
-            background: #1e1e1e; border: 1px solid #444; border-radius: 6px; padding: 10px;
-            text-align: center; font-size: 0.9em; cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center; min-height: 45px;
+            background: #1e1e1e; border: 1px solid #444; border-radius: 6px; padding: 8px;
+            text-align: center; font-size: 0.85em; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px;
+            line-height: 1.2;
         }
+        .role-box small { font-size: 0.85em; color: var(--text-muted); margin-top: 2px; }
         .role-box:hover { border-color: var(--text-muted); background: #333; }
         .role-box.selected { border-color: var(--accent); background: rgba(79, 172, 254, 0.15); color: var(--accent); font-weight: bold; }
+        .role-box.selected small { color: var(--accent); }
 
         /* Question Cards */
-        .question-card { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid transparent; }
+        .question-card { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid transparent; }
         .question-card.answered { border-left: 4px solid var(--accent); }
-        .question-text { font-size: 1em; margin-bottom: 12px; line-height: 1.4; }
+        .question-text { font-size: 0.95em; margin-bottom: 12px; line-height: 1.4; }
         .options-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        .radio-btn { flex: 1; min-width: 70px; }
+        .radio-btn { flex: 1; min-width: 60px; }
         .radio-btn input[type="radio"] { display: none; }
         .radio-btn label {
-            display: block; text-align: center; padding: 10px; background: #333; border: 2px solid transparent;
-            border-radius: 6px; cursor: pointer; font-size: 0.9em; position: relative;
+            display: block; text-align: center; padding: 8px; background: #333; border: 2px solid transparent;
+            border-radius: 6px; cursor: pointer; font-size: 0.85em; position: relative;
         }
         .radio-btn input[value="Yes"]:checked + label { background: rgba(0, 230, 118, 0.15); border-color: var(--success); color: var(--success); font-weight: bold; }
         .radio-btn input[value="No"]:checked + label { background: rgba(255, 75, 75, 0.15); border-color: var(--danger); color: var(--danger); font-weight: bold; }
@@ -185,21 +175,33 @@
         .floating-smiley { position: absolute; font-size: 20px; animation: floatUpFade 1s forwards ease-out; pointer-events: none; z-index: 1000; }
 
         .nav-buttons { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
-        button { padding: 12px 20px; border: none; border-radius: 6px; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.3s; flex: 1; }
+        button { padding: 12px 20px; border: none; border-radius: 6px; font-size: 0.95em; font-weight: bold; cursor: pointer; transition: 0.3s; flex: 1; }
         .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: #000; }
         .btn-secondary { background: #444; color: white; }
-        .btn-submit, .start-btn { width: 100%; max-width: 300px; margin: 0 auto; display: block; padding: 15px; }
+        
+        /* Shrunken Submit Button */
+        .btn-submit { width: 100%; max-width: 180px; margin: 0 auto; display: block; padding: 12px; }
+        .start-btn { width: 100%; max-width: 200px; margin: 0 auto; display: block; padding: 12px; }
 
-        .disclaimer { font-size: 0.85em; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5; }
-        .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; }
+        .disclaimer { font-size: 0.8em; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.4; }
+        .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; }
         .success-icon { font-size: 3em; color: var(--success); margin-bottom: 10px; }
 
+        /* Extreme Mobile Tightening */
         @media (max-width: 600px) {
-            .container { padding: 15px; margin-right: 15px; width: calc(100% - 15px); }
-            /* Notice: .inline-row remains flex (side-by-side) on mobile! */
-            .map-window { height: 220px; }
-            .role-grid { grid-template-columns: repeat(2, 1fr); }
-            .role-box { font-size: 0.85em; padding: 8px; }
+            body { padding: 5px; }
+            .container { padding: 12px; margin-top: 10px; border-radius: 8px; }
+            h1 { font-size: 1.5em; }
+            h3 { font-size: 0.85em; margin-bottom: 15px; }
+            .form-group { padding: 10px; margin-bottom: 10px; }
+            .inline-row { gap: 10px; }
+            .map-window { height: 160px; } /* Kept short to limit scrolling */
+            .role-grid { grid-template-columns: repeat(3, 1fr); gap: 5px; }
+            .role-box { font-size: 0.75em; padding: 6px; min-height: 45px; }
+            .role-box small { font-size: 0.8em; }
+            .question-card { padding: 10px; }
+            .question-text { font-size: 0.9em; }
+            .radio-btn label { padding: 8px 4px; font-size: 0.8em; }
         }
     </style>
 </head>
@@ -213,61 +215,60 @@
 
 <div class="container">
     <h1>BRAIDS</h1>
-    <h3>Beliefs to Report Academic Integrity in Dentistry</h3>
+    <h3>Beliefs Regarding Academic Integrity in Dentistry</h3>
 
     <div id="header-warning" class="header-warning" style="display: none;">
-        <strong>Note:</strong> Academic Dishonesty/Misconduct or failing to maintain Academic Integrity in a Dental Institute includes cheating on examinations, plagiarizing assignments, disobeying professors by engaging in forbidden activities, forging or fabricating patient data, lying to faculty members to gain unfair advantage, lying to patients, and falsifying institutional documents (Turner SP, Beemsterboer PL. Enhancing academic integrity: formulating effective honor codes. J Dent Educ. 2003;67(10):1122-1129.).
+        <strong>Note:</strong> Academic Dishonesty/Misconduct or failing to maintain Academic Integrity in a Dental Institute includes cheating on examinations, plagiarizing assignments, disobeying professors by engaging in forbidden activities, forging or fabricating patient data, lying to faculty members to gain unfair advantage, lying to patients, and falsifying institutional documents.
     </div>
 
     <!-- HOME PAGE -->
     <div id="home-section" class="section active">
         
-        <!-- Age & Gender (Forced Side by Side) -->
+        <!-- Age & Gender (Side by Side) -->
         <div class="form-group inline-row">
+            <!-- Playful Age Selection -->
             <div>
-                <label class="main-label" for="user-age">1. Age:</label>
-                <input type="number" id="user-age" placeholder="Age" min="17" max="100">
+                <label class="main-label">1. Age:</label>
+                <div class="slider-container">
+                    <div class="age-display-bubble" id="age-display">25</div>
+                    <input type="range" id="user-age" min="17" max="80" value="25" oninput="updateAge(this.value)">
+                </div>
             </div>
+            <!-- Playful Gender Toggle -->
             <div>
-                <label class="main-label" for="user-gender">2. Gender:</label>
-                <select id="user-gender">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
-                    <option value="Other">Other</option>
-                </select>
+                <label class="main-label">2. Gender:</label>
+                <div class="gender-toggle-wrapper">
+                    <span id="label-male" class="gender-label active-male">Male</span>
+                    <label class="switch">
+                        <input type="checkbox" id="user-gender-toggle" onchange="updateGenderToggle()">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="label-female" class="gender-label">Female</span>
+                </div>
             </div>
         </div>
 
-        <!-- Zoomable & Pannable Map -->
+        <!-- Clean, Pannable Map -->
         <div class="form-group">
             <label class="main-label">3. Tap on the state where your institute is located:</label>
-            <div style="position: relative;">
-                <div class="map-window" id="map-window">
-                    <div id="india-map"></div>
-                </div>
-                <!-- Custom Zoom Controls placed over the wrapper -->
-                <div class="zoom-controls">
-                    <div class="zoom-btn" onclick="zoomMap(50)">+</div>
-                    <div class="zoom-btn" onclick="zoomMap(-50)">−</div>
-                </div>
+            <div class="map-window" id="map-window">
+                <div id="india-map"></div>
             </div>
-            <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin: 10px 0 0 0; font-size: 0.9em;">No state selected</p>
-            <p style="text-align: center; font-size: 0.75em; color: var(--text-muted); margin-top: 5px;">(Use + to zoom in and drag to pan)</p>
+            <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin: 8px 0 0 0; font-size: 0.85em;">No state selected</p>
+            <p style="text-align: center; font-size: 0.75em; color: var(--text-muted); margin-top: 4px;">(Use + to zoom and drag to pan)</p>
         </div>
 
-        <!-- Role Selection -->
+        <!-- Multiline Role Selection -->
         <div class="form-group">
             <label class="main-label">4. Select Role:</label>
             <div class="role-grid" id="role-grid">
-                <div class="role-box" data-value="Faculty (< 3 years)">Faculty (< 3 yrs)</div>
-                <div class="role-box" data-value="Faculty (> 3 years)">Faculty (> 3 yrs)</div>
-                <div class="role-box" data-value="Undergrad (1st year)">Undergrad (1st yr)</div>
-                <div class="role-box" data-value="Undergrad (2nd year)">Undergrad (2nd yr)</div>
-                <div class="role-box" data-value="Undergrad (3rd year)">Undergrad (3rd yr)</div>
-                <div class="role-box" data-value="Undergrad (4th year)">Undergrad (4th yr)</div>
-                <div class="role-box" data-value="Intern">Intern</div>
+                <div class="role-box" data-value="Faculty (< 3 years)">Faculty<br><small>(< 3 yrs)</small></div>
+                <div class="role-box" data-value="Faculty (> 3 years)">Faculty<br><small>(> 3 yrs)</small></div>
+                <div class="role-box" data-value="Undergrad (1st year)">Undergrad<br><small>(1st yr)</small></div>
+                <div class="role-box" data-value="Undergrad (2nd year)">Undergrad<br><small>(2nd yr)</small></div>
+                <div class="role-box" data-value="Undergrad (3rd year)">Undergrad<br><small>(3rd yr)</small></div>
+                <div class="role-box" data-value="Undergrad (4th year)">Undergrad<br><small>(4th yr)</small></div>
+                <div class="role-box" data-value="Intern">Intern<br><small></small></div>
             </div>
         </div>
 
@@ -289,7 +290,7 @@
             <p class="disclaimer">
                 <strong>Disclaimer:</strong> By clicking the button below, you confirm that your responses can be considered for further research with an assurity that your identity remains confidential.
             </p>
-            <button class="btn-primary btn-submit" onclick="submitData()" id="submit-btn">Submit Your Response</button>
+            <button class="btn-primary btn-submit" onclick="submitData()" id="submit-btn">Submit</button>
         </div>
     </div>
 
@@ -297,8 +298,8 @@
     <div id="thanks-section" class="section">
         <div class="center-content">
             <div class="success-icon">✓</div>
-            <h2>Thank you for your participation</h2>
-            <p style="color: var(--text-muted)">Your responses have been securely recorded.</p>
+            <h2>Thank you!</h2>
+            <p style="color: var(--text-muted); font-size: 0.9em;">Your responses have been securely recorded.</p>
         </div>
     </div>
 </div>
@@ -308,21 +309,35 @@
     const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLnWlqWIpbBqEknPQwUz-MM7Rv4c9rIIwuPdF9O1nxPKpS6Ed7eQkbU4ETklqaAiM/exec';
 
     // ----------------------------------------------------
-    // MAP ZOOM & PAN LOGIC
+    // PLAYFUL INPUT LOGIC
     // ----------------------------------------------------
-    let currentMapWidth = 100; // Start at 100%
-    function zoomMap(delta) {
-        currentMapWidth += delta;
-        if (currentMapWidth < 100) currentMapWidth = 100;
-        if (currentMapWidth > 300) currentMapWidth = 300; // Max zoom 300%
-        
-        const mapElement = document.getElementById('india-map');
-        mapElement.style.width = currentMapWidth + '%';
-        mapElement.style.height = currentMapWidth + '%';
+    let currentUserAge = "25";
+    let currentUserGender = "Male"; // Default
 
-        // Redraw chart to fit the new internal dimensions, enabling scrolling
-        if(geoChart && geoData && geoOptions) {
-            geoChart.draw(geoData, geoOptions);
+    function updateAge(val) {
+        currentUserAge = val;
+        document.getElementById('age-display').innerText = val;
+    }
+
+    function updateGenderToggle() {
+        const toggle = document.getElementById('user-gender-toggle');
+        const labelMale = document.getElementById('label-male');
+        const labelFemale = document.getElementById('label-female');
+
+        if (toggle.checked) {
+            currentUserGender = "Female";
+            labelMale.classList.remove('active-male');
+            labelFemale.classList.add('active-female');
+            // Change Age slider color playfully to match
+            document.documentElement.style.setProperty('--accent', 'var(--female-color)');
+            document.getElementById('age-display').style.color = 'var(--female-color)';
+        } else {
+            currentUserGender = "Male";
+            labelFemale.classList.remove('active-female');
+            labelMale.classList.add('active-male');
+            // Revert Age slider color back to blue
+            document.documentElement.style.setProperty('--accent', 'var(--male-color)');
+            document.getElementById('age-display').style.color = 'var(--male-color)';
         }
     }
 
@@ -365,7 +380,6 @@
         backgroundColor: 'transparent', datalessRegionColor: '#1e1e1e', defaultColor: '#333',
         colorAxis: { colors: ['#333', '#4facfe'], minValue: 0, maxValue: 1 },
         legend: 'none', keepAspectRatio: true,
-        // CRITICAL FIX FOR iOS: trigger 'none' disables the hover state blocking clicks.
         tooltip: { trigger: 'none' } 
       };
 
@@ -381,6 +395,9 @@
           geoData.setValue(rowIndex, 1, 1);
           selectedStateName = geoData.getValue(rowIndex, 2);
           document.getElementById('selected-state-display').innerText = selectedStateName;
+          
+          // Match selected state color to current gender accent
+          geoOptions.colorAxis.colors[1] = currentUserGender === "Female" ? '#ff61a6' : '#4facfe';
           geoChart.draw(geoData, geoOptions);
         }
       });
@@ -388,8 +405,16 @@
     }
     
     // ----------------------------------------------------
-    // SURVEY LOGIC
+    // THEME & SURVEY LOGIC
     // ----------------------------------------------------
+    // Dynamic Background Gradients for each page
+    const bgGradients = [
+        'radial-gradient(circle at top left, rgba(79, 172, 254, 0.15), #121212 60%)', // Blueish
+        'radial-gradient(circle at top right, rgba(142, 45, 226, 0.15), #121212 60%)', // Purplish
+        'radial-gradient(circle at bottom left, rgba(0, 242, 254, 0.15), #121212 60%)', // Tealish
+        'radial-gradient(circle at bottom right, rgba(255, 97, 166, 0.15), #121212 60%)' // Pinkish
+    ];
+
     const facultyQuestions = [
         "Peers and senior faculty members influence my actions against academic misconduct.",
         "I wish to report academic dishonesty, but I am bound by institutional culture.",
@@ -452,19 +477,19 @@
         document.getElementById('top-progress-container').style.display = sectionId === 'questions-section' ? 'block' : 'none'; 
     }
 
+    function changeBackground() {
+        // Cycle through the subtle gradients based on the current page
+        document.body.style.backgroundImage = bgGradients[currentPage % bgGradients.length];
+    }
+
     function startSurvey() {
-        const userAge = document.getElementById('user-age').value;
-        const userGender = document.getElementById('user-gender').value;
-        
-        if (!userAge) { alert("Please enter your age."); return; }
-        if (!userGender) { alert("Please select your gender."); return; }
         if (!selectedStateName) { alert("Please tap to select your state on the map."); return; }
         if (!currentRole) { alert("Please select your role."); return; }
         
-        userResponses = { role: currentRole, age: userAge, gender: userGender, state: selectedStateName };
+        userResponses = { role: currentRole, age: currentUserAge, gender: currentUserGender, state: selectedStateName };
         activeQuestions = currentRole.includes("Faculty") ? facultyQuestions : studentQuestions;
         
-        currentPage = 0; updateProgress(); renderQuestions(); switchSection('questions-section');
+        currentPage = 0; changeBackground(); updateProgress(); renderQuestions(); switchSection('questions-section');
     }
 
     function renderQuestions() {
@@ -517,11 +542,19 @@
 
     function nextPage() {
         if (!checkAllAnswered()) { alert("Please answer all questions on this page."); return; }
-        if (currentPage < (totalQuestions / questionsPerPage) - 1) { currentPage++; renderQuestions(); window.scrollTo(0, 0); } 
-        else { switchSection('submit-section'); window.scrollTo(0, 0); }
+        if (currentPage < (totalQuestions / questionsPerPage) - 1) { 
+            currentPage++; changeBackground(); renderQuestions(); window.scrollTo(0, 0); 
+        } else { 
+            document.body.style.backgroundImage = 'none'; // Clear background on submit page
+            switchSection('submit-section'); window.scrollTo(0, 0); 
+        }
     }
 
-    function prevPage() { if (currentPage > 0) { currentPage--; renderQuestions(); window.scrollTo(0, 0); } }
+    function prevPage() { 
+        if (currentPage > 0) { 
+            currentPage--; changeBackground(); renderQuestions(); window.scrollTo(0, 0); 
+        } 
+    }
 
     function submitData() {
         const btn = document.getElementById('submit-btn'); btn.innerText = "Submitting..."; btn.disabled = true;
