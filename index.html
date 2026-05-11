@@ -76,9 +76,7 @@
 
         /* SPLIT LAYOUT: Left (Form) / Right (Map) */
         .split-layout {
-            display: flex;
-            gap: 20px;
-            width: 100%;
+            display: flex; gap: 20px; width: 100%;
         }
         .left-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
         .right-col { flex: 1; display: flex; flex-direction: column; }
@@ -108,11 +106,24 @@
             background: var(--accent); cursor: pointer; transition: background 0.5s ease; border: 2px solid #fff;
         }
 
-        /* Map Window */
-        .map-wrapper { flex-grow: 1; position: relative; background: #1e1e1e; border: 1px solid #444; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 250px; }
+        /* Map Window - The Fix */
+        .map-viewport {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            min-height: 250px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #151515;
+            border: 1px solid #333;
+        }
+        
         .map-scroller {
-            flex-grow: 1; width: 100%; overflow: auto; cursor: grab;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            overflow: auto; cursor: grab;
             scrollbar-width: none; -ms-overflow-style: none; /* Hide scrollbars */
+            -webkit-overflow-scrolling: touch;
         }
         .map-scroller::-webkit-scrollbar { display: none; }
         .map-scroller:active { cursor: grabbing; }
@@ -137,16 +148,23 @@
         .role-box.selected { border-color: var(--accent); background: rgba(255, 255, 255, 0.05); color: var(--accent); font-weight: bold; }
         .role-box.selected small { color: var(--accent); }
 
-        /* Floating Age Emoji */
+        /* Floating Emojis */
         @keyframes floatEmoji { 0% { opacity: 1; transform: translate(-50%, 0) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -60px) scale(1.5); } }
         .age-emoji { position: absolute; top: 10px; left: 50%; font-size: 30px; animation: floatEmoji 1.5s forwards ease-out; pointer-events: none; z-index: 100; }
+
+        @keyframes floatUpFadeRadio { 0% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1.5); } }
+        .floating-smiley {
+            position: absolute; top: -10px; left: 50%; font-size: 20px;
+            animation: floatUpFadeRadio 1s forwards ease-out; pointer-events: none; z-index: 1000;
+        }
 
         /* Question Cards */
         .question-card { background: rgba(42, 42, 42, 0.8); padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid transparent; }
         .question-card.answered { border-left: 4px solid var(--accent); }
         .question-text { font-size: 0.95em; margin-bottom: 12px; line-height: 1.4; }
         .options-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        .radio-btn { flex: 1; min-width: 60px; }
+        
+        .radio-btn { flex: 1; min-width: 60px; position: relative; }
         .radio-btn input[type="radio"] { display: none; }
         .radio-btn label {
             display: block; text-align: center; padding: 8px; background: #333; border: 2px solid transparent;
@@ -168,13 +186,13 @@
         .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; }
         .success-icon { font-size: 3em; color: var(--success); margin-bottom: 10px; }
 
-        /* Extreme Mobile Optimization (Keeping 50/50 split) */
+        /* Mobile Optimization */
         @media (max-width: 600px) {
             body { padding: 5px; }
             .container { padding: 10px; margin-top: 10px; border-radius: 8px; }
             h1 { font-size: 1.4em; }
             h3 { font-size: 0.8em; margin-bottom: 10px; }
-            .split-layout { gap: 8px; }
+            .split-layout { gap: 8px; flex-direction: column; } 
             .form-box { padding: 8px; margin-bottom: 0; }
             label.main-label { font-size: 0.7em; margin-bottom: 5px; }
             .age-display-bubble { font-size: 1.2em; }
@@ -183,9 +201,9 @@
             .tri-state-slider { width: 60px; height: 6px; margin: 0 5px; }
             .tri-state-slider::-webkit-slider-thumb { width: 14px; height: 14px; }
             .gender-label { font-size: 0.65em; }
-            .role-grid { grid-template-columns: 1fr; gap: 4px; } /* Single column role grid on mobile left pane */
+            .role-grid { grid-template-columns: repeat(3, 1fr); gap: 4px; } 
             .role-box { padding: 4px; min-height: 35px; font-size: 0.7em; }
-            .map-wrapper { min-height: 100%; height: 100%; }
+            .map-viewport { min-height: 200px; }
         }
     </style>
 </head>
@@ -215,7 +233,7 @@
                     <label class="main-label">AGE</label>
                     <div class="slider-container" id="age-container">
                         <div class="age-display-bubble" id="age-display">25</div>
-                        <input type="range" id="user-age" min="17" max="80" value="25" oninput="updateAge(this.value)" onchange="dropAgeEmoji(this.value)">
+                        <input type="range" id="user-age" min="17" max="99" value="25" oninput="updateAge(this.value)" onchange="dropAgeEmoji(this.value)">
                     </div>
                 </div>
 
@@ -246,18 +264,20 @@
 
             <!-- RIGHT PANEL: Interactive Map -->
             <div class="right-col">
-                <div class="form-box map-wrapper">
+                <div class="form-box" style="flex-grow: 1; display: flex; flex-direction: column;">
                     <label class="main-label" style="text-align: center; margin-bottom: 2px;">TAP ON THE STATE WHERE YOUR INSTITUTE IS LOCATED</label>
                     <p style="text-align: center; font-size: 0.7em; color: var(--text-muted); margin: 0 0 5px 0;">(Use + to zoom and drag to pan)</p>
                     
-                    <div class="map-scroller" id="map-scroller">
-                        <div id="india-map"></div>
+                    <div class="map-viewport">
+                        <div class="map-scroller" id="map-scroller">
+                            <div id="india-map"></div>
+                        </div>
+                        <div class="zoom-controls">
+                            <div class="zoom-btn" onclick="zoomMap(20)">+</div>
+                            <div class="zoom-btn" onclick="zoomMap(-20)">−</div>
+                        </div>
                     </div>
-                    
-                    <div class="zoom-controls">
-                        <div class="zoom-btn" onclick="zoomMap(20)">+</div>
-                        <div class="zoom-btn" onclick="zoomMap(-20)">−</div>
-                    </div>
+
                     <p id="selected-state-display" style="color: var(--accent); font-weight: bold; text-align: center; margin: 10px 0 0 0; font-size: 0.85em;">No state selected</p>
                 </div>
             </div>
@@ -316,10 +336,10 @@
 
     function dropAgeEmoji(val) {
         const container = document.getElementById('age-container');
-        let emojiChar = '🌱';
-        if (val >= 26 && val <= 40) emojiChar = '🚀';
-        else if (val >= 41 && val <= 60) emojiChar = '🏆';
-        else if (val > 60) emojiChar = '👑';
+        let emojiChar = '🍼'; // 17-25
+        if (val >= 26 && val <= 40) emojiChar = '☕';
+        else if (val >= 41 && val <= 60) emojiChar = '🍺';
+        else if (val > 60) emojiChar = '🍷';
 
         const emoji = document.createElement('div');
         emoji.className = 'age-emoji';
@@ -346,26 +366,32 @@
             labelFemale.style.color = 'var(--female-color)'; labelMale.style.color = '#555';
         }
         
-        // Update map color immediately if state is selected
         if(geoChart && geoOptions) {
             geoOptions.colorAxis.colors[1] = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
             geoChart.draw(geoData, geoOptions);
         }
     }
 
-    // Custom Drag Scroll for Map
+    // ----------------------------------------------------
+    // DESKTOP MOUSE PAN LOGIC
+    // ----------------------------------------------------
     const scroller = document.getElementById('map-scroller');
     let isDown = false; let startX; let startY; let scrollLeft; let scrollTop;
+    
     scroller.addEventListener('mousedown', (e) => {
-        isDown = true; startX = e.pageX - scroller.offsetLeft; startY = e.pageY - scroller.offsetTop;
-        scrollLeft = scroller.scrollLeft; scrollTop = scroller.scrollTop;
+        isDown = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        scrollLeft = scroller.scrollLeft;
+        scrollTop = scroller.scrollTop;
     });
     scroller.addEventListener('mouseleave', () => { isDown = false; });
     scroller.addEventListener('mouseup', () => { isDown = false; });
     scroller.addEventListener('mousemove', (e) => {
-        if (!isDown) return; e.preventDefault();
-        const x = e.pageX - scroller.offsetLeft; const y = e.pageY - scroller.offsetTop;
-        scroller.scrollLeft = scrollLeft - (x - startX); scroller.scrollTop = scrollTop - (y - startY);
+        if (!isDown) return;
+        e.preventDefault();
+        scroller.scrollLeft = scrollLeft - (e.clientX - startX);
+        scroller.scrollTop = scrollTop - (e.clientY - startY);
     });
 
     // ----------------------------------------------------
@@ -512,11 +538,10 @@
         userResponses[qId] = value; document.getElementById(`card-${qId}`).classList.add('answered'); updateProgress();
 
         const smiley = document.createElement('div'); smiley.className = 'floating-smiley'; smiley.innerText = '😊';
-        const label = event.target.nextElementSibling; const rect = label.getBoundingClientRect();
+        const targetInput = event.target || document.getElementById(`${qId}_${value.toLowerCase()}`);
+        const container = targetInput.closest('.radio-btn'); 
         
-        smiley.style.left = (rect.left + window.scrollX + rect.width / 2 - 10) + 'px'; 
-        smiley.style.top = (rect.top + window.scrollY - 10) + 'px'; 
-        document.body.appendChild(smiley);
+        container.appendChild(smiley);
         setTimeout(() => smiley.remove(), 1000);
     }
 
