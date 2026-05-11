@@ -9,18 +9,18 @@
 
     <!-- Social Media Link Preview Meta Tags -->
     <meta property="og:title" content="The BRAIDS Project">
-    <meta property="og:description" content="Beliefs Regarding Academic Integrity in Dentistry.">
+    <meta property="og:description" content="Beliefs Regarding Academic Integrity in Dentistry. Participate in our interactive survey.">
     <!-- REPLACE THE URL BELOW WITH YOUR ACTUAL GITHUB URL -->
-    <meta property="og:image" content="https://balrajshukla.github.io/BRAIDS/preview.png">
-    <meta property="og:url" content="https://balrajshukla.github.io/BRAIDS/">
+    <meta property="og:image" content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/preview.png">
+    <meta property="og:url" content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/">
     <meta property="og:type" content="website">
 
     <!-- Twitter/X Specific Link Preview Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="The BRAIDS Project">
-    <meta name="twitter:description" content="Beliefs Regarding Academic Integrity in Dentistry.">
+    <meta name="twitter:description" content="Beliefs Regarding Academic Integrity in Dentistry. Participate in our interactive survey.">
     <!-- REPLACE THE URL BELOW WITH YOUR ACTUAL GITHUB URL -->
-    <meta name="twitter:image" content="https://balrajshukla.github.io/BRAIDS/preview.png">
+    <meta name="twitter:image" content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/preview.png">
     
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
@@ -188,6 +188,16 @@
         .center-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; }
         .success-icon { font-size: 3em; color: var(--success); margin-bottom: 10px; }
 
+        /* Cross-Promotion Links Styling */
+        .promo-section { margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; width: 100%; max-width: 400px; text-align: center; }
+        .promo-section p { color: var(--text-muted); font-size: 0.85em; margin-bottom: 15px; }
+        .promo-buttons { display: flex; flex-direction: column; gap: 10px; }
+        .btn-promo { display: block; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9em; transition: all 0.3s; }
+        .btn-dipdip { background: rgba(79, 172, 254, 0.1); color: var(--accent); border: 1px solid var(--accent); }
+        .btn-dipdip:hover { background: var(--accent); color: #000; }
+        .btn-youtube { background: rgba(255, 75, 75, 0.1); color: #ff4b4b; border: 1px solid #ff4b4b; }
+        .btn-youtube:hover { background: #ff4b4b; color: #fff; }
+
         @media (max-width: 600px) {
             body { padding: 5px; }
             .container { padding: 10px; margin-top: 10px; border-radius: 8px; }
@@ -303,12 +313,22 @@
         </div>
     </div>
 
-    <!-- THANK YOU PAGE -->
+    <!-- THANK YOU PAGE WITH PROMO -->
     <div id="thanks-section" class="section">
         <div class="center-content">
             <div class="success-icon">✓</div>
             <h2>Thank you!</h2>
             <p style="color: var(--text-muted); font-size: 0.9em;">Your responses have been securely recorded.</p>
+            
+            <!-- Cross-Promotion Section -->
+            <div class="promo-section">
+                <p>While you are here, check out these other resources:</p>
+                <div class="promo-buttons">
+                    <a href="https://balrajshukla.github.io/DIPDIP" target="_blank" class="btn-promo btn-dipdip">The DIPDIP Project</a>
+                    <a href="https://www.youtube.com/watch?v=7h95CpvA8q8&list=PLnG8aLwfngUgdojv6ZB6ejziW-i5laugd" target="_blank" class="btn-promo btn-youtube">Watch on YouTube</a>
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>
