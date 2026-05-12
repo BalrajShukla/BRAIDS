@@ -334,7 +334,7 @@
 </div>
 
 <script>
-    // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    // 
     const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLnWlqWIpbBqEknPQwUz-MM7Rv4c9rIIwuPdF9O1nxPKpS6Ed7eQkbU4ETklqaAiM/exec';
 
     // ----------------------------------------------------
@@ -588,10 +588,32 @@
 
     function submitData() {
         const btn = document.getElementById('submit-btn'); btn.innerText = "Submitting..."; btn.disabled = true;
-        fetch(GOOGLE_APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(userResponses) })
-        .then(() => switchSection('thanks-section'))
+       fetch(GOOGLE_APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(userResponses) })
+        .then(() => {
+            // This leaves the invisible stamp on their browser
+            localStorage.setItem('braids_survey_completed', 'true');
+            switchSection('thanks-section');
+        })
         .catch(() => { alert("Error submitting. Please try again."); btn.innerText = "Submit"; btn.disabled = false; });
     }
+    // ----------------------------------------------------
+    // DUPLICATE PREVENTION LOGIC
+    // ----------------------------------------------------
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('braids_survey_completed') === 'true') {
+            // Hide the warning and progress bar
+            document.getElementById('header-warning').style.display = 'none';
+            document.getElementById('top-progress-container').style.display = 'none';
+            
+            // Change the text to reflect they already submitted
+            document.querySelector('#thanks-section h2').innerText = "Already Submitted";
+            document.querySelector('#thanks-section p').innerText = "You have already completed this survey on this device.";
+            
+            // Immediately jump to the thanks section
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('thanks-section').classList.add('active');
+        }
+    });
 </script>
 </body>
 </html>
